@@ -1,0 +1,73 @@
+import { useMutation } from "@tanstack/react-query";
+import {
+  registerUser,
+  loginUser,
+  verifyOtp,
+  resendOtp,
+  forgotPassword,
+  verifyOtpForgotPassword,
+  resetPassword,
+} from "@/features/auth/services/auth.service";
+import {
+  RegisterFormValues,
+  LoginFormValues,
+  VerifyOtpPayload,
+  verifyOtpForgotPasswordPayload,
+  resetPasswordPayload,
+} from "@/features/auth/types/auth.types";
+import { useAuth } from "@/contexts/AuthContext";
+
+const TOKEN_MAX_AGE_SECONDS = 1800;
+
+export const useRegister = () => {
+  return useMutation({
+    mutationFn: (payload: RegisterFormValues) => registerUser(payload),
+  });
+};
+
+export const useLogin = () => {
+  const { login } = useAuth();
+  return useMutation({
+    mutationFn: (payload: LoginFormValues) => loginUser(payload),
+    onSuccess: (data) => {
+      localStorage.setItem("accessToken", data.data.accessToken);
+      login(data.data.accessToken);
+      localStorage.setItem("user", JSON.stringify(data.data.user));
+      document.cookie = `accessToken=${data.data.accessToken}; path=/; max-age=${TOKEN_MAX_AGE_SECONDS}; SameSite=Lax`;
+    },
+  });
+};
+
+export const useVerifyOtp = () => {
+  return useMutation({
+    mutationFn: (payload: VerifyOtpPayload) => verifyOtp(payload),
+    onSuccess: () => {
+      document.cookie = `onboardingAccess=true; path=/; max-age=${TOKEN_MAX_AGE_SECONDS}; SameSite=Lax`;
+    },
+  });
+};
+
+export const useResendOtp = () => {
+  return useMutation({
+    mutationFn: (payload: { email: string }) => resendOtp(payload),
+  });
+};
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: (payload: { email: string }) => forgotPassword(payload),
+  });
+};
+
+export const useVerifyForgotPasswordOtp = () => {
+  return useMutation({
+    mutationFn: (payload: verifyOtpForgotPasswordPayload) =>
+      verifyOtpForgotPassword(payload),
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: (payload: resetPasswordPayload) => resetPassword(payload),
+  });
+};
