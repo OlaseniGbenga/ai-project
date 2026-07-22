@@ -4,12 +4,27 @@ import {
   getLesson,
   postCompletedLesson,
   getLessons,
+  getLearningPathStatus,
 } from "@/features/auth/services/courses.service";
 
 export const useGetLearningPath = () => {
   return useQuery({
     queryKey: ["learning-path"],
     queryFn: getLearningPath,
+  });
+};
+
+export const useGetLearningPathStatus = () => {
+  return useQuery({
+    queryKey: ["learning-path-status"],
+    queryFn: getLearningPathStatus,
+    refetchInterval: (query) => {
+      const status = query.state.data?.data.isReady;
+
+      return status
+        ? false // Poll every 5 minutes
+        : 5 * 60 * 1000; // Stop polling
+    },
   });
 };
 

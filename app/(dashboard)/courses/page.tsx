@@ -2,12 +2,23 @@
 
 import { Button, Divider, Skeleton } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import { useGetLearningPath } from "@/features/auth/hooks/useCourse";
+import {
+  useGetLearningPath,
+  useGetLearningPathStatus,
+} from "@/features/auth/hooks/useCourse";
 
 function Page() {
   const { data, isLoading, isError, error } = useGetLearningPath();
+  const { data: pathStatus, isLoading: pathStatusLoading } =
+    useGetLearningPathStatus();
   const courseLessons = data?.data.courses ?? [];
   const router = useRouter();
+
+  if (!pathStatus?.data.isReady ){
+    return (<p>
+      {pathStatus?.data.message}
+    </p>)
+  }
 
   if (isError) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -24,7 +35,7 @@ function Page() {
         </div>
       </div>
 
-      {isLoading ? (
+      {isLoading || pathStatusLoading ? (
         <div className="flex flex-col gap-4">
           <Skeleton h={100} />
           <Skeleton h={100} />

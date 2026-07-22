@@ -102,7 +102,7 @@ export default function LearningPathPage() {
             <Button
               w={{ base: "100%", xs: 260 }}
               rightSection={<ArrowRight size={14} />}
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/courses")}
               styles={PRIMARY_BUTTON_STYLE}
             >
               Start learning

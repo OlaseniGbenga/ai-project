@@ -53,6 +53,17 @@ export interface LearningPath {
   courses: Course[];
 }
 
+export interface LearningPathStatus {
+  status: string;
+  isReady: boolean;
+  availableCourseCount: number;
+  message: string;
+  profile: {
+    trade: string;
+    learnerLevel: string;
+  };
+}
+
 export interface ApiResponse<T = unknown> {
   data: T;
   timestamp: string;
@@ -64,5 +75,7 @@ export interface CourseLessonsResponse {
 }
 
 export type LearningPathResponse = ApiResponse<LearningPath>;
+
+export type LearningPathStatusResponse = ApiResponse<LearningPathStatus>;
 export type CourseLessonResponse = ApiResponse<Lesson[]>;
 export type singleLessonResponse = ApiResponse<Lesson>;
