@@ -130,3 +130,24 @@ body {
 .mantine-Notifications-root {
   position: fixed !important;
 }
+
+.auth-input input,
+.auth-input .mantine-PasswordInput-innerInput {
+  color: #000000 !important;
+}
+
+.auth-input input::placeholder,
+.auth-input .mantine-PasswordInput-innerInput::placeholder {
+  color: var(--neutral-500) !important;
+}
+
+.auth-input input[data-error]::placeholder,
+.auth-input .mantine-PasswordInput-innerInput[data-error]::placeholder {
+  color: var(--neutral-500) !important;
+}
+
+.auth-input .mantine-InputWrapper-error {
+  color: #fa5252;
+  font-size: 12px;
+  margin-top: 4px;
+}

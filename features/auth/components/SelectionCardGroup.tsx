@@ -43,6 +43,7 @@ const SelectionCardGroup: React.FC<SelectionCardGroupProps> = ({
           />
         )}
       </SimpleGrid>
+  
       {allowOther && value === "other" && (
         <TextInput
           placeholder="Please specify..."
@@ -65,5 +66,4 @@ const SelectionCardGroup: React.FC<SelectionCardGroupProps> = ({
     </Stack>
   );
 };
-
 export default SelectionCardGroup;

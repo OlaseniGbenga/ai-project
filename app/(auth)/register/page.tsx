@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Text, Anchor, Group, Box, Paper } from "@mantine/core";
+import { Stack, Text, Anchor, Group, Box } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
@@ -15,9 +15,9 @@ import {
   validateEmail,
   validatePassword,
   validateConfirmPassword,
+  AUTH_FORM_WIDTH,
   AUTH_FORM_MAX_WIDTH,
 } from "@/features/auth/utils/auth.validations";
-import { EMERALD, ONBOARDING_CARD_STYLE } from "@/features/auth/utils/auth.theme";
 import { useRegister } from "@/features/auth/hooks/useAuth";
 
 export default function RegisterPage() {
@@ -30,6 +30,7 @@ export default function RegisterPage() {
       password: "",
       confirmPassword: "",
     },
+    validateInputOnChange: true,
     validate: {
       email: validateEmail,
       password: validatePassword,
@@ -41,10 +42,11 @@ export default function RegisterPage() {
     register(values, {
       onSuccess: () => {
         localStorage.setItem("pendingEmail", values.email);
+        localStorage.setItem("pendingPassword", values.password);
         notifications.show({
           title: "Account created",
           message: "Please verify your email address.",
-          color: "green",
+          color: "brand.5",
         });
         router.push("/verify-otp");
       },
@@ -67,30 +69,20 @@ export default function RegisterPage() {
   return (
     <AuthPageWrapper>
       <Stack
-        w="100%"
+        w={AUTH_FORM_WIDTH}
+        maw={AUTH_FORM_MAX_WIDTH}
         px="md"
         gap={0}
-        style={{ flex: 1, display: "flex", flexDirection: "column" }}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
       >
-        <Box mb="sm" maw={AUTH_FORM_MAX_WIDTH} mx="auto" w="100%">
+        <Stack gap="xs">
           <AuthHeader />
           <AuthProgress currentStep={1} totalSteps={6} />
-        </Box>
-        <Paper
-          radius={24}
-          p={{ base: "md", sm: "xl" }}
-          bg="white"
-          maw={AUTH_FORM_MAX_WIDTH}
-          mx="auto"
-          w="100%"
-          style={ONBOARDING_CARD_STYLE}
-        >
-          <Text fw={700} size="20px" c="#000000" mb={4}>
-            Create your account
-          </Text>
-          <Text size="13px" c={EMERALD[700]} mb="lg">
-            Start learning AI in a way that works for you.
-          </Text>
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="xs">
               <AuthInput
@@ -104,8 +96,8 @@ export default function RegisterPage() {
                 }
               />
               <Group gap={6} align="center">
-                <Info size={14} color={EMERALD[700]} />
-                <Text size="xs" c={EMERALD[700]}>
+                <Info size={14} color="#000000" />
+                <Text size="xs" c="#000000">
                   Code will be sent to your email for verification!
                 </Text>
               </Group>
@@ -126,19 +118,23 @@ export default function RegisterPage() {
                 value={form.values.confirmPassword}
                 error={form.errors.confirmPassword as string}
                 onChange={(event) =>
-                  form.setFieldValue("confirmPassword", event.currentTarget.value)
+                  form.setFieldValue(
+                    "confirmPassword",
+                    event.currentTarget.value,
+                  )
                 }
               />
               <AuthButton label="Continue" type="submit" loading={isPending} />
               <Text size="13px" ta="center" c="#000000">
                 Already have an account?{" "}
-                <Anchor href="/login" c={EMERALD[700]} size="14px" fw={600}>
+                <Anchor href="/login" c="brand.5" size="16px" fw={600}>
                   Log in
                 </Anchor>
               </Text>
             </Stack>
           </form>
-        </Paper>
+        </Stack>
+        <Box pb="md" />
       </Stack>
     </AuthPageWrapper>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Text, Box, Anchor, Paper } from "@mantine/core";
+import { Stack, Text, Anchor, Box } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
@@ -10,14 +10,11 @@ import AuthButton from "@/features/auth/components/AuthButton";
 import AuthPageWrapper from "@/features/auth/components/AuthPageWrapper";
 import { LoginFormValues } from "@/features/auth/types/auth.types";
 import {
+  AUTH_FORM_WIDTH,
   AUTH_FORM_MAX_WIDTH,
   validateEmail,
   validateLoginPassword,
 } from "@/features/auth/utils/auth.validations";
-import {
-  EMERALD,
-  ONBOARDING_CARD_STYLE,
-} from "@/features/auth/utils/auth.theme";
 import { useLogin } from "@/features/auth/hooks/useAuth";
 
 export default function LoginPage() {
@@ -41,7 +38,7 @@ export default function LoginPage() {
         notifications.show({
           title: "Welcome back",
           message: "Login successful",
-          color: "green",
+          color: "brand.5",
         });
         router.push("/courses");
       },
@@ -58,29 +55,19 @@ export default function LoginPage() {
   return (
     <AuthPageWrapper>
       <Stack
-        w="100%"
+        w={AUTH_FORM_WIDTH}
+        maw={AUTH_FORM_MAX_WIDTH}
         px="md"
         gap={0}
-        style={{ flex: 1, display: "flex", flexDirection: "column" }}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
       >
-        <Box mb="sm" maw={AUTH_FORM_MAX_WIDTH} mx="auto" w="100%">
+        <Stack gap="xs">
           <AuthHeader />
-        </Box>
-        <Paper
-          radius={24}
-          p={{ base: "md", sm: "xl" }}
-          bg="white"
-          maw={AUTH_FORM_MAX_WIDTH}
-          mx="auto"
-          w="100%"
-          style={ONBOARDING_CARD_STYLE}
-        >
-          <Text fw={700} size="20px" c="#000000" mb={4}>
-            Welcome back
-          </Text>
-          <Text size="13px" c={EMERALD[700]} mb="lg">
-            Use your email and password to continue learning.
-          </Text>
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="xs">
               <AuthInput
@@ -105,22 +92,23 @@ export default function LoginPage() {
               />
               <Anchor
                 href="/forgot-password"
-                c={EMERALD[700]}
-                size="14px"
+                c="brand.5"
+                size="16px"
                 fw={600}
               >
                 Forgotten Password
               </Anchor>
               <AuthButton label="Log In" type="submit" loading={isPending} />
               <Text size="13px" ta="center" c="#000000">
-                You don&apos;t have an account?{" "}
-                <Anchor href="/register" c={EMERALD[700]} size="14px" fw={600}>
+                You don't have an account?{" "}
+                <Anchor href="/register" c="brand.5" size="16px" fw={600}>
                   Sign up
                 </Anchor>
               </Text>
             </Stack>
           </form>
-        </Paper>
+        </Stack>
+        <Box pb="md" />
       </Stack>
     </AuthPageWrapper>
   );

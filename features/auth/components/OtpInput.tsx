@@ -8,7 +8,7 @@ const OtpInput: React.FC<OtpInputProps> = ({ value, onChange }) => {
   };
 
   return (
-    <Group justify="center">
+    <Group justify="center" my="md">
       <PinInput
         length={6}
         value={value.join("")}
@@ -16,15 +16,17 @@ const OtpInput: React.FC<OtpInputProps> = ({ value, onChange }) => {
         oneTimeCode
         inputMode="numeric"
         type={/^[0-9]*$/}
-        gap="lg"
+        gap="sm"
         styles={{
           input: {
-            width: "clamp(32px, 8vw, 48px)",
-            height: "clamp(32px, 8vw, 48px)",
+            width: "clamp(36px, 8vw, 44px)",
+            height: "clamp(36px, 8vw, 44px)",
             textAlign: "center",
-            fontSize: "clamp(14px, 4vw, 20px)",
+            fontSize: "clamp(14px, 3vw, 18px)",
             borderColor: "#423E3E",
             borderRadius: "8px",
+            fontWeight: 600,
+            padding: 0,
           },
         }}
       />

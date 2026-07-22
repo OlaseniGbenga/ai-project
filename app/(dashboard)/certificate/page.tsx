@@ -1,7 +1,7 @@
-import React from "react";
+import { CertificateScreen } from "@/features/certificate/components";
 
-function page() {
-  return <div>certificate</div>;
+function Page() {
+  return <CertificateScreen />;
 }
 
-export default page;
+export default Page;

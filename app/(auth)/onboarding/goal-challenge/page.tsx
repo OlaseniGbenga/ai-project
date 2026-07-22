@@ -7,7 +7,7 @@ import {
   Box,
   Anchor,
   Paper,
-  Flex,
+  Group,
   Button,
   ScrollArea,
 } from "@mantine/core";
@@ -19,16 +19,18 @@ import AuthProgress from "@/features/auth/components/AuthProgress";
 import AuthPageWrapper from "@/features/auth/components/AuthPageWrapper";
 import SelectionCardGroup from "@/features/auth/components/SelectionCardGroup";
 import {
+  AUTH_FORM_WIDTH,
   ONBOARDING_HEADER_MAX_WIDTH,
-  ONBOARDING_CARD_MAX_WIDTH,
 } from "@/features/auth/utils/auth.validations";
 import {
-  EMERALD,
-  ONBOARDING_CARD_STYLE,
-  PRIMARY_BUTTON_STYLE,
-  OUTLINE_BUTTON_STYLE,
-} from "@/features/auth/utils/auth.theme";
-import { OnboardingGoalChallengeValues } from "@/features/auth/types/onboarding.types";
+  OnboardingGoalChallengeValues,
+  TRADE_ID_MAP,
+  GOAL_ID_MAP,
+  AI_USAGE_ENUM_MAP,
+  TECH_COMFORT_ENUM_MAP,
+  DAILY_TIME_ENUM_MAP,
+} from "@/features/auth/types/onboarding.types";
+import { useCompleteOnboarding } from "@/features/auth/hooks/useOnboarding";
 
 const LEARNING_GOALS = [
   "Save time on tasks",
@@ -44,11 +46,9 @@ const BIGGEST_CHALLENGES = [
   "I don't know where / how to start learning",
 ];
 
-const CURRENT_STEP = 5;
-const TOTAL_STEPS = 6;
-
 export default function GoalChallengePage() {
   const router = useRouter();
+  const { mutate: completeOnboarding, isPending } = useCompleteOnboarding();
   const [values, setValues] = useState<OnboardingGoalChallengeValues>({
     learningGoal: "",
     learningGoalOther: "",
@@ -73,55 +73,92 @@ export default function GoalChallengePage() {
       });
       return;
     }
-    localStorage.setItem("onboarding_goal_challenge", JSON.stringify(values));
-    router.push("/onboarding/learning-path");
+
+    const aboutWork = JSON.parse(
+      localStorage.getItem("onboarding_about_work") ?? "{}",
+    );
+    const comfortPace = JSON.parse(
+      localStorage.getItem("onboarding_comfort_pace") ?? "{}",
+    );
+
+    const tradeId = TRADE_ID_MAP[aboutWork.occupation] ?? TRADE_ID_MAP["other"];
+    const goalId = GOAL_ID_MAP[values.learningGoal] ?? GOAL_ID_MAP["other"];
+    const aiFamiliarityLevel =
+      AI_USAGE_ENUM_MAP[aboutWork.aiUsage] ?? "OCCASIONALLY";
+    const technologyComfortLevel =
+      TECH_COMFORT_ENUM_MAP[comfortPace.techComfort] ?? "COMFORTABLE";
+    const dailyLearningTime =
+      DAILY_TIME_ENUM_MAP[comfortPace.dailyTime] ?? "TEN_MINUTES";
+
+    completeOnboarding(
+      {
+        tradeId,
+        otherTrade:
+          aboutWork.occupation === "other"
+            ? aboutWork.occupationOther
+            : undefined,
+        aiFamiliarityLevel,
+        technologyComfortLevel,
+        dailyLearningTime,
+        goalId,
+        otherGoal:
+          values.learningGoal === "other"
+            ? values.learningGoalOther
+            : undefined,
+        mainChallenge: values.biggestChallenge || values.biggestChallengeOther,
+      },
+      {
+        onSuccess: () => {
+          localStorage.setItem(
+            "onboarding_goal_challenge",
+            JSON.stringify(values),
+          );
+          router.push("/onboarding/learning-path");
+        },
+        onError: (err: Error) => {
+          notifications.show({
+            title: "Onboarding failed",
+            message: err.message,
+            color: "red",
+          });
+        },
+      },
+    );
   };
 
   return (
     <AuthPageWrapper showBack={false}>
       <Stack
-        w="100%"
+        w={AUTH_FORM_WIDTH}
+        maw="800px"
         px="md"
         gap={0}
-        style={{ flex: 1, display: "flex", flexDirection: "column" }}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
         <Box mb="sm" maw={ONBOARDING_HEADER_MAX_WIDTH} mx="auto" w="100%">
           <AuthHeader />
-          <AuthProgress currentStep={CURRENT_STEP} totalSteps={TOTAL_STEPS} />
+          <AuthProgress currentStep={5} totalSteps={6} />
         </Box>
         <Paper
-          radius={24}
-          p={{ base: "md", sm: "xl" }}
+          radius="lg"
+          p="xl"
           bg="white"
-          maw={ONBOARDING_CARD_MAX_WIDTH}
-          mx="auto"
-          w="100%"
           style={{
             flex: 1,
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            ...ONBOARDING_CARD_STYLE,
           }}
         >
-          <Flex justify="space-between" align="center" mb="md">
-            <Text
-              size="12px"
-              fw={700}
-              c={EMERALD[700]}
-              style={{ letterSpacing: "0.5px" }}
-            >
-              ONBOARDING
-            </Text>
-            <Text size="12px" fw={600} c="#8E8E8E">
-              Step {CURRENT_STEP} of {TOTAL_STEPS}
-            </Text>
-          </Flex>
           <Text fw={700} size="24px" c="#000000" mb={4}>
             Your goal & challenge
           </Text>
           <Text size="13px" c="#919191" mb="lg">
-            Tell us what success looks like — and what&apos;s in the way.
+            Tell us what success looks like — and what's in the way.
           </Text>
           <ScrollArea style={{ flex: 1 }} offsetScrollbars>
             <Stack gap="xl" pb="md">
@@ -169,16 +206,18 @@ export default function GoalChallengePage() {
               />
             </Stack>
           </ScrollArea>
-          <Flex direction={{ base: "column", xs: "row" }} gap="md" pt="lg">
+          <Group pt="lg" gap="md">
             <Anchor
               onClick={() => router.back()}
               style={{ textDecoration: "none", flex: 1 }}
             >
               <Button
                 fullWidth
+                size="md"
                 variant="outline"
+                color="brand.5"
+                radius="md"
                 leftSection={<ArrowLeft size={14} />}
-                styles={OUTLINE_BUTTON_STYLE}
               >
                 Back
               </Button>
@@ -186,13 +225,16 @@ export default function GoalChallengePage() {
             <Box style={{ flex: 2 }}>
               <Button
                 fullWidth
+                size="md"
+                color="brand.5"
+                radius="md"
+                loading={isPending}
                 onClick={handleContinue}
-                styles={PRIMARY_BUTTON_STYLE}
               >
                 Generate my path
               </Button>
             </Box>
-          </Flex>
+          </Group>
         </Paper>
       </Stack>
     </AuthPageWrapper>

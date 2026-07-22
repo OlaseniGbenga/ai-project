@@ -1,5 +1,5 @@
 import React from "react";
-import { PasswordInput, TextInput } from "@mantine/core";
+import { PasswordInput, TextInput, Text } from "@mantine/core";
 import { AuthInputProps } from "../types/auth.types";
 import { EMERALD } from "../utils/auth.theme";
 
@@ -17,6 +17,7 @@ const inputStyles = {
     height: "52px",
     fontSize: "16px",
     marginBottom: "4px",
+    color: "#000000",
   },
 };
 
@@ -28,31 +29,29 @@ const AuthInput: React.FC<AuthInputProps> = ({
   error,
   onChange,
 }) => {
-  if (type === "password") {
-    return (
-      <PasswordInput
-        label={label}
-        placeholder={placeholder}
-        value={value}
-        error={error}
-        onChange={onChange}
-        size="lg"
-        styles={inputStyles}
-      />
-    );
-  }
+  const shared = {
+    label,
+    placeholder,
+    value,
+    onChange,
+    size: "lg" as const,
+    styles: inputStyles,
+    className: "auth-input",
+  };
 
   return (
-    <TextInput
-      label={label}
-      placeholder={placeholder}
-      type={type}
-      value={value}
-      error={error}
-      onChange={onChange}
-      size="lg"
-      styles={inputStyles}
-    />
+    <div>
+      {type === "password" ? (
+        <PasswordInput {...shared} />
+      ) : (
+        <TextInput {...shared} type={type} />
+      )}
+      {error && (
+        <Text size="12px" c="#fa5252" mt={4}>
+          {error}
+        </Text>
+      )}
+    </div>
   );
 };
 

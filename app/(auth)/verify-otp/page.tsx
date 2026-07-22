@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Stack, Text, Anchor, Box, Paper } from "@mantine/core";
+import { Stack, Text, Anchor, Box } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
 import AuthHeader from "@/features/auth/components/AuthHeader";
@@ -9,9 +9,15 @@ import AuthProgress from "@/features/auth/components/AuthProgress";
 import OtpInput from "@/features/auth/components/OtpInput";
 import AuthButton from "@/features/auth/components/AuthButton";
 import AuthPageWrapper from "@/features/auth/components/AuthPageWrapper";
-import { AUTH_FORM_MAX_WIDTH } from "@/features/auth/utils/auth.validations";
-import { EMERALD, ONBOARDING_CARD_STYLE } from "@/features/auth/utils/auth.theme";
-import { useVerifyOtp, useResendOtp } from "@/features/auth/hooks/useAuth";
+import {
+  AUTH_FORM_WIDTH,
+  AUTH_FORM_MAX_WIDTH,
+} from "@/features/auth/utils/auth.validations";
+import {
+  useVerifyOtp,
+  useResendOtp,
+  useLogin,
+} from "@/features/auth/hooks/useAuth";
 
 export default function VerifyOtpPage() {
   const router = useRouter();
@@ -24,15 +30,20 @@ export default function VerifyOtpPage() {
       ? (localStorage.getItem("pendingEmail") ?? "")
       : "";
 
+  const password =
+    typeof window !== "undefined"
+      ? (localStorage.getItem("pendingPassword") ?? "")
+      : "";
+
   const { mutate: verify, isPending: verifying } = useVerifyOtp();
   const { mutate: resend, isPending: resending } = useResendOtp();
+  const { mutate: login } = useLogin();
 
   useEffect(() => {
     if (countdown === 0) {
       setResendReady(true);
       return;
     }
-
     const timer = setTimeout(
       () => setCountdown((previous) => previous - 1),
       1000,
@@ -50,7 +61,7 @@ export default function VerifyOtpPage() {
           notifications.show({
             title: "OTP sent",
             message: `Your OTP has been sent to ${email.replace(/(.{2}).*(@.*)/, "$1***$2")}`,
-            color: "green",
+            color: "brand.5",
           });
         },
         onError: (err: Error) => {
@@ -66,7 +77,14 @@ export default function VerifyOtpPage() {
 
   const handleSubmit = () => {
     const otpValue = otp.join("");
-    if (otpValue.length < 6) return;
+    if (otpValue.length < 6) {
+      notifications.show({
+        title: "Incomplete OTP",
+        message: "Please enter all 6 digits.",
+        color: "red",
+      });
+      return;
+    }
 
     verify(
       { email, otp: otpValue },
@@ -75,12 +93,27 @@ export default function VerifyOtpPage() {
           notifications.show({
             title: "Email verified",
             message: "Email verified successfully",
-            color: "green",
+            color: "brand.5",
           });
           localStorage.removeItem("pendingEmail");
-          setTimeout(() => {
-            router.push("/onboarding/about-work");
-          }, 100);
+
+          login(
+            { email, password },
+            {
+              onSuccess: () => {
+                localStorage.removeItem("pendingPassword");
+                setTimeout(() => {
+                  router.push("/onboarding/about-work");
+                }, 100);
+              },
+              onError: () => {
+                localStorage.removeItem("pendingPassword");
+                setTimeout(() => {
+                  router.push("/onboarding/about-work");
+                }, 100);
+              },
+            },
+          );
         },
         onError: () => {
           notifications.show({
@@ -96,60 +129,55 @@ export default function VerifyOtpPage() {
   return (
     <AuthPageWrapper>
       <Stack
-        w="100%"
+        w={AUTH_FORM_WIDTH}
+        maw={AUTH_FORM_MAX_WIDTH}
         px="md"
         gap={0}
-        style={{ flex: 1, display: "flex", flexDirection: "column" }}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
       >
-        <Box mb="sm" maw={AUTH_FORM_MAX_WIDTH} mx="auto" w="100%">
+        <Stack gap="md">
           <AuthHeader />
-          <AuthProgress currentStep={2} totalSteps={6} />
-        </Box>
-        <Paper
-          radius={24}
-          p={{ base: "md", sm: "xl" }}
-          bg="white"
-          maw={AUTH_FORM_MAX_WIDTH}
-          mx="auto"
-          w="100%"
-          style={ONBOARDING_CARD_STYLE}
-        >
-          <Text fw={700} size="20px" c="#000000" mb={4}>
+          <Text fw={700} size="xl" c="#000000">
             OTP Verification
           </Text>
-          <Text size="13px" c={EMERALD[700]} mb="lg">
-            Enter the 6-digit code sent to your email.
-          </Text>
-          <Stack gap="xs">
-            <OtpInput value={otp} onChange={setOtp} />
+          <AuthProgress currentStep={2} totalSteps={6} />
+          <OtpInput value={otp} onChange={setOtp} />
+          <Stack gap={4} align="center">
             <Text size="13px" ta="center" c="#000000">
-              Didn&apos;t receive any code?{" "}
+              Didn't receive any code?{" "}
               {resendReady ? (
                 <Anchor
                   component="span"
-                  c={EMERALD[700]}
+                  c="brand.5"
                   fw={600}
-                  size="14px"
+                  size="13px"
                   onClick={handleResend}
                 >
                   {resending ? "Sending..." : "Resend code"}
                 </Anchor>
               ) : (
-                <Text span size="14px" fw={600} c="#919191">
+                <Text span size="13px" fw={600} c="#919191">
                   Resend code
                 </Text>
               )}
             </Text>
-            <Text ta="center" fw={600} c="#000000" pt={8}>
+            <Text fw={600} size="14px" c="#000000">
               0:{countdown < 10 ? `0${countdown}` : countdown}
             </Text>
-            <AuthButton
-              label="Continue"
-              onClick={handleSubmit}
-              loading={verifying}
-            />
           </Stack>
-        </Paper>
+        </Stack>
+        <Box pb="md">
+          <AuthButton
+            label="Continue"
+            onClick={handleSubmit}
+            loading={verifying}
+          />
+        </Box>
       </Stack>
     </AuthPageWrapper>
   );
