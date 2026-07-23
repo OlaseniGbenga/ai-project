@@ -37,12 +37,12 @@ export function CertificateScreen() {
     <section className="min-h-[calc(100vh-92px)] bg-[#f3f2f2] px-0 py-8 sm:px-2">
       <div className="flex w-full max-w-5xl flex-col gap-6">
         <CertificateHeader />
-
+{/* 
         <div className="grid gap-4 md:grid-cols-3">
           {certificateStats.map((item) => (
             <CertificateStatCard key={item.label} {...item} />
           ))}
-        </div>
+        </div> */}
 
         <CertificatePreview {...certificate} />
       </div>

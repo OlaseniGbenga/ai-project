@@ -10,7 +10,7 @@ import {
   usePostCompletedLesson,
 } from "@/features/auth/hooks/useCourse";
 import Quiz from "@/components/quiz/quiz";
-
+import { useRouter } from "next/navigation";
 interface PageProps {
   params: Promise<{
     lessonID: string;
@@ -21,6 +21,7 @@ function Page({ params }: PageProps) {
   const { lessonID } = React.use(params);
   const { data, isLoading, isError, error } = useGetLesson(lessonID);
   const { mutate, isPending } = usePostCompletedLesson(lessonID);
+  const router = useRouter();
 
   const handleSubmit = async () => {
     mutate(undefined, {
@@ -46,8 +47,8 @@ function Page({ params }: PageProps) {
 
       {!isLoading && (
         <div className="flex flex-col">
-          <div className="flex  justify-between">
-            <div>
+          <div className="flex flex-col  justify-between">
+            <div className="mb-2">
               <BackButton />
             </div>
             <h1 className="text-2xl font-bold text-primary-700">
@@ -77,10 +78,12 @@ function Page({ params }: PageProps) {
             </div>
             <Button
               loading={isPending}
-              onClick={handleSubmit}
+              onClick={() => {
+                router.push(`/quiz/${data?.data.id}`);
+              }}
               className="btn btn-primary self-start"
             >
-              Completed
+              Continue
             </Button>
           </div>
           {/* <Quiz lessonID={lessonID} /> */}

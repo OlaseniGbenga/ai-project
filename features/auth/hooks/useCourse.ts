@@ -5,6 +5,8 @@ import {
   postCompletedLesson,
   getLessons,
   getLearningPathStatus,
+  getQuizs,
+  postQuizs,
 } from "@/features/auth/services/courses.service";
 
 export const useGetLearningPath = () => {
@@ -47,5 +49,18 @@ export const useGetLessons = (courseID: string) => {
 export const usePostCompletedLesson = (id: string) => {
   return useMutation({
     mutationFn: () => postCompletedLesson(id),
+  });
+};
+
+export const useGetQuizs = (lessonID: string) => {
+  return useQuery({
+    queryKey: ["lessons-Quiz", lessonID],
+    queryFn: () => getQuizs(lessonID),
+  });
+};
+
+export const usePostSubmitQuiz = (id: string,) => {
+  return useMutation({
+    mutationFn: ( payload: unknown) => postQuizs(id, payload),
   });
 };

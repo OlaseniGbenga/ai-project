@@ -1,3 +1,21 @@
+export interface QuizOption {
+  id: string;
+  optionText: string;
+}
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: QuizOption[];
+}
+
+export interface Quiz {
+  id: string;
+  title: string;
+  passingScore: number;
+  questions: QuizQuestion[];
+}
+
 export interface LessonResponse {
   data: {
     id: string;
@@ -44,6 +62,24 @@ export interface Lesson {
   isLocked: boolean;
   status: "UP_NEXT" | "LOCKED" | "COMPLETED" | "IN_PROGRESS";
   flashcards: FlashCard[];
+  quiz?: Quiz;
+}
+
+export interface NewLesson {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  thumbnailUrl: string;
+  isPublished: boolean;
+  createdAt: string;
+  progressPercent: number;
+  completedLessons: number;
+  totalLessons: number;
+  lessons: Lesson[];
+  isQuizAvailable: true;
+  isAssignmentAvailable: true;
+  lastAccessedLessonId: null;
 }
 
 export interface LearningPath {
@@ -77,5 +113,12 @@ export interface CourseLessonsResponse {
 export type LearningPathResponse = ApiResponse<LearningPath>;
 
 export type LearningPathStatusResponse = ApiResponse<LearningPathStatus>;
-export type CourseLessonResponse = ApiResponse<Lesson[]>;
+export type CourseLessonResponse = ApiResponse<NewLesson>;
+
+export type CourseContent = ApiResponse<Lesson[]>;
 export type singleLessonResponse = ApiResponse<Lesson>;
+export type QuizPost = ApiResponse<Quiz[]>;
+export type QuizResponse = ApiResponse<{
+  scorePercent: number;
+  isPassed: boolean;
+}>;

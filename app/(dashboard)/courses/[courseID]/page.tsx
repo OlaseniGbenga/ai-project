@@ -17,7 +17,7 @@ function Page({ params }: PageProps) {
   const { courseID } = React.use(params);
   const { data, isLoading, isError, error } = useGetLessons(courseID);
   const [step, setStep] = useState(6);
-  const courseLessons = data?.data ?? [];
+  const courseLessons = data?.data.lessons ?? [];
   //   const percentage =
   //     data?.data.course.progressPercent ?? getProgressPercentage(step, 7);
   //   const totalModules = data?.data.course.totalModules ?? 7;
@@ -49,9 +49,9 @@ function Page({ params }: PageProps) {
   return (
     <div className=" flex flex-col gap-4">
       <div className="flex  justify-between flex-col sm:flex-row gap-4">
-        <BackButton />
         <div className="flex flex-col gap-4">
-          <p className="text-primary-700">My courses</p>
+          <BackButton />
+          <p className="text-primary-700">My Lessons</p>
           {/* <p className="heading font-black ">Pick up where you left off</p>
           <p>Built from your goal: Business application</p> */}
         </div>
@@ -112,7 +112,9 @@ function Page({ params }: PageProps) {
                   </div>
 
                   <Button
-                    onClick={() => router.push(`/courses/${courseID}/lesson/${item.id}`)}
+                    onClick={() =>
+                      router.push(`/courses/${courseID}/lesson/${item.id}`)
+                    }
                     className="btn-xs btn-primary btn-rounded"
                     disabled={item.isLocked}
                   >
