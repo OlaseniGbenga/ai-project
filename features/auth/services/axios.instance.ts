@@ -42,17 +42,17 @@ axiosInstance.interceptors.response.use(
     markActivity();
     return response;
   },
-  (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      clearAuthSession();
-    }
+  // (error) => {
+  //   if (error.response?.status === 401 || error.response?.status === 403) {
+  //     clearAuthSession();
+  //   }
 
-    const message =
-      error.response?.data?.message?.message ||
-      error.response?.data?.message ||
-      "Something went wrong";
-    return Promise.reject(new Error(message));
-  },
+  //   const message =
+  //     error.response?.data?.message?.message ||
+  //     error.response?.data?.message ||
+  //     "Something went wrong";
+  //   return Promise.reject(new Error(message));
+  // },
 );
 
 export default axiosInstance;
