@@ -1,12 +1,31 @@
 "use client";
 
-import { useState } from "react";
-import { TextInput, Button, PasswordInput } from "@mantine/core";
+import { PasswordInput, Button } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { cn } from "@/utils";
 import { useResetPassword } from "@/features/auth/hooks/useAuth";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/navigation";
+import {
+  EMERALD,
+  PRIMARY_BUTTON_STYLE,
+} from "@/features/auth/utils/auth.theme";
+
+const inputStyles = {
+  label: {
+    fontSize: "14px",
+    fontWeight: 600,
+    marginBottom: "8px",
+    color: EMERALD[900],
+  },
+  input: {
+    backgroundColor: "rgba(236, 253, 245, 0.6)",
+    borderColor: EMERALD[200],
+    borderRadius: "12px",
+    height: "52px",
+    fontSize: "16px",
+    color: "#000000",
+  },
+};
 
 function ConfirmPasswordForm() {
   const { mutate: resetPassword, isPending } = useResetPassword();
@@ -16,7 +35,6 @@ function ConfirmPasswordForm() {
       password1: "",
       password2: "",
     },
-
     validate: {
       password1: (value) =>
         value.length < 6 ? "Password must be at least 6 characters" : null,
@@ -41,7 +59,6 @@ function ConfirmPasswordForm() {
         newPassword: values.password1,
         confirmPassword: values.password2,
       },
-
       {
         onSuccess: () => {
           notifications.show({
@@ -61,35 +78,31 @@ function ConfirmPasswordForm() {
       },
     );
   };
+
   return (
     <form
       onSubmit={form.onSubmit(handleSubmit)}
-      className="space-y-4 w-full  sm:w-101.5"
+      className="space-y-5 w-full sm:w-101.5"
     >
-      <p className="font-bold text-[15px]">Create new password</p>
+      <p className="font-bold text-[16px]">Create new password</p>
       <PasswordInput
         label="New Password"
-        type="password"
         placeholder="Enter new password"
         {...form.getInputProps("password1")}
-        classNames={{
-          input: cn("input"),
-        }}
+        styles={inputStyles}
       />
       <PasswordInput
         label="Confirm Password"
         placeholder="Confirm new password"
         {...form.getInputProps("password2")}
-        classNames={{
-          input: cn("input"),
-        }}
+        styles={inputStyles}
       />
-
       <Button
-        className={cn("btn btn-primary")}
         type="submit"
+        fullWidth
         loading={isPending}
         disabled={isPending}
+        styles={PRIMARY_BUTTON_STYLE}
       >
         Create password
       </Button>

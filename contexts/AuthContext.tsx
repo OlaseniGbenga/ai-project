@@ -1,4 +1,3 @@
-// contexts/AuthContext.tsx
 "use client";
 
 import {
@@ -64,6 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
+    document.cookie = "accessToken=; path=/; max-age=0; SameSite=Lax";
+    document.cookie = "onboardingAccess=; path=/; max-age=0; SameSite=Lax";
+    document.cookie = "onboardingCompleted=; path=/; max-age=0; SameSite=Lax";
     setToken(null);
   }, []);
 
@@ -126,20 +128,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // notifications.show({
-    //   id: WARNING_PROMPT_ID,
-    //   title: "Still here?",
-    //   message:
-    //     "You’ve been inactive for 25 minutes. Do you want to stay logged in?",
-    //   color: "yellow",
-    //   autoClose: false,
-    //   withCloseButton: true,
-    // });
-
-    // const shouldStayLoggedIn = window.confirm(
-    //   "You’ve been inactive for 25 minutes. Do you want to stay logged in?",
-    // );
-
     modals.openConfirmModal({
       title: "Still here?",
       centered: true,
@@ -170,15 +158,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout();
       },
     });
-
-    // if (shouldStayLoggedIn) {
-    //   notifications.hide(WARNING_PROMPT_ID);
-    //   void handleStayLoggedIn();
-    //   return;
-    // }
-
-    // notifications.hide(WARNING_PROMPT_ID);
-    // logout();
   }, [handleStayLoggedIn, logout]);
 
   useEffect(() => {

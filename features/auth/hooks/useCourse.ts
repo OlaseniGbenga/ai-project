@@ -7,6 +7,8 @@ import {
   getLearningPathStatus,
   getQuizs,
   postQuizs,
+  getPracTask,
+  postPracTask,
 } from "@/features/auth/services/courses.service";
 
 export const useGetLearningPath = () => {
@@ -24,8 +26,8 @@ export const useGetLearningPathStatus = () => {
       const status = query.state.data?.data.isReady;
 
       return status
-        ? false // Poll every 5 minutes
-        : 5 * 60 * 1000; // Stop polling
+        ? false // Poll every 30 seconds
+        : 30 * 1000; // Stop polling
     },
   });
 };
@@ -59,8 +61,21 @@ export const useGetQuizs = (lessonID: string) => {
   });
 };
 
-export const usePostSubmitQuiz = (id: string,) => {
+export const useGetPracTask = (lessonID: string) => {
+  return useQuery({
+    queryKey: ["PracTask", lessonID],
+    queryFn: () => getPracTask(lessonID),
+  });
+};
+
+export const usePostSubmitQuiz = (id: string) => {
   return useMutation({
-    mutationFn: ( payload: unknown) => postQuizs(id, payload),
+    mutationFn: (payload: unknown) => postQuizs(id, payload),
+  });
+};
+
+export const usePostPracTask = (taskID: string) => {
+  return useMutation({
+    mutationFn: () => postPracTask(taskID),
   });
 };

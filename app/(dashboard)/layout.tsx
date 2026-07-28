@@ -1,12 +1,6 @@
 "use client";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  AppShell,
-  Burger,
-  Group,
-  NavLink,
-  Button,
-} from "@mantine/core";
+import { AppShell, Burger, Group, NavLink, Button } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -120,7 +114,12 @@ export default function Layout({ children }: AuthLayoutProps) {
         <AppShell.Navbar p="md">
           <div className="flex flex-col gap-4">
             {data.map((item) => {
-              const active = pathname.startsWith(item.href);
+              const active =
+                item.href === "/courses"
+                  ? ["/courses", "/quiz", "/practical-task"].some((path) =>
+                      pathname.startsWith(path),
+                    )
+                  : pathname === item.href;
 
               return (
                 <NavLink
@@ -128,7 +127,7 @@ export default function Layout({ children }: AuthLayoutProps) {
                   component={Link}
                   href={item.href}
                   label={item.label}
-                  active={pathname === item.href}
+                  active={active}
                   styles={{
                     root: {
                       backgroundColor: active ? "var(--color-primary-700)" : "",

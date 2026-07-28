@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Check, ArrowRight } from "lucide-react";
 import AuthHeader from "@/features/auth/components/AuthHeader";
-import AuthProgress from "@/features/auth/components/AuthProgress";
 import AuthPageWrapper from "@/features/auth/components/AuthPageWrapper";
 import {
   ONBOARDING_HEADER_MAX_WIDTH,
@@ -24,9 +23,6 @@ const LEARNING_PATH_ITEMS = [
   "Complete lessons in 15 minutes a day",
 ];
 
-const CURRENT_STEP = 6;
-const TOTAL_STEPS = 6;
-
 export default function LearningPathPage() {
   const router = useRouter();
 
@@ -40,7 +36,6 @@ export default function LearningPathPage() {
       >
         <Box mb="sm" maw={ONBOARDING_HEADER_MAX_WIDTH} mx="auto" w="100%">
           <AuthHeader />
-          <AuthProgress currentStep={CURRENT_STEP} totalSteps={TOTAL_STEPS} />
         </Box>
         <Paper
           radius={24}
@@ -64,9 +59,6 @@ export default function LearningPathPage() {
               style={{ letterSpacing: "0.5px" }}
             >
               ONBOARDING
-            </Text>
-            <Text size="12px" fw={600} c="#8E8E8E">
-              Step {CURRENT_STEP} of {TOTAL_STEPS}
             </Text>
           </Flex>
           <Stack

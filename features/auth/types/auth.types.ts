@@ -70,6 +70,7 @@ export interface AuthUser {
   id: string;
   email: string;
   isEmailVerified: boolean;
+  isOnboardingComplete: boolean;
 }
 
 export interface RegisterResponse {

@@ -22,14 +22,14 @@ const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({
         display: "flex",
         justifyContent: "center",
         width: "100%",
-        padding: "48px 24px",
+        padding: "clamp(28px, 8vw, 48px) clamp(16px, 4vw, 24px)",
       }}
     >
       {showBack && (
         <Anchor
           c="#066F33"
           onClick={() => router.back()}
-          style={{ position: "fixed", left: 24, top: 24, zIndex: 10 }}
+          style={{ position: "fixed", left: 16, top: 16, zIndex: 10 }}
         >
           <ArrowLeft size={24} />
         </Anchor>

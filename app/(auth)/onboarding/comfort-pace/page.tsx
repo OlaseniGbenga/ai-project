@@ -29,8 +29,8 @@ const TECH_COMFORT_OPTIONS = [
 
 const DAILY_TIME_OPTIONS = ["5 mins", "10 mins", "15 mins", "20 mins or more"];
 
-const CURRENT_STEP = 4;
-const TOTAL_STEPS = 6;
+const CURRENT_STEP = 2;
+const TOTAL_STEPS = 3;
 
 export default function ComfortPacePage() {
   const router = useRouter();
@@ -121,7 +121,7 @@ export default function ComfortPacePage() {
           </Stack>
           <Flex direction={{ base: "column", xs: "row" }} gap="md" pt="lg">
             <Anchor
-              onClick={() => router.back()}
+              onClick={() => router.replace("/onboarding/about-work")}
               style={{ textDecoration: "none", flex: 1 }}
             >
               <Button

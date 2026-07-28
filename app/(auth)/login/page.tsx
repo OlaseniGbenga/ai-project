@@ -8,7 +8,10 @@ import AuthHeader from "@/features/auth/components/AuthHeader";
 import AuthInput from "@/features/auth/components/AuthInput";
 import AuthButton from "@/features/auth/components/AuthButton";
 import AuthPageWrapper from "@/features/auth/components/AuthPageWrapper";
-import { LoginFormValues } from "@/features/auth/types/auth.types";
+import {
+  LoginFormValues,
+  LoginResponse,
+} from "@/features/auth/types/auth.types";
 import {
   AUTH_FORM_WIDTH,
   AUTH_FORM_MAX_WIDTH,
@@ -34,13 +37,18 @@ export default function LoginPage() {
 
   const handleSubmit = (values: LoginFormValues) => {
     login(values, {
-      onSuccess: () => {
+      onSuccess: (data: LoginResponse) => {
         notifications.show({
           title: "Welcome back",
           message: "Login successful",
           color: "brand.5",
         });
-        router.push("/courses");
+
+        if (data.data.user.isOnboardingComplete) {
+          router.replace("/courses");
+        } else {
+          router.replace("/onboarding/about-work");
+        }
       },
       onError: (err: Error) => {
         notifications.show({
@@ -90,13 +98,8 @@ export default function LoginPage() {
                   form.setFieldValue("password", event.currentTarget.value)
                 }
               />
-              <Anchor
-                href="/forgot-password"
-                c="brand.5"
-                size="16px"
-                fw={600}
-              >
-                Forgotten Password
+              <Anchor href="/forgot-password" c="brand.5" size="16px" fw={600}>
+                Forgot Password?
               </Anchor>
               <AuthButton label="Log In" type="submit" loading={isPending} />
               <Text size="13px" ta="center" c="#000000">

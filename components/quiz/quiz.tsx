@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { usePostCompletedLesson } from "@/features/auth/hooks/useCourse";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { usePostSubmitQuiz } from "@/features/auth/hooks/useCourse";
+import { useRouter } from "next/navigation";
 
 interface QuizOption {
   id: string;
@@ -53,6 +54,7 @@ export default function Quiz({ quizData, lessonID }: QuizProps) {
     Object.keys(selections).length === totalQuestions;
 
   const { mutate, isPending, data } = usePostSubmitQuiz(quizData.id);
+  const router = useRouter();
   const handleSelectAnswer = (optionId: string) => {
     // Store the selection (questionId as the index, selectedOptionId as the value)
     setSelections((prev) => ({
@@ -100,6 +102,7 @@ export default function Quiz({ quizData, lessonID }: QuizProps) {
               message: "You scored above the passmark",
               color: "brand.5",
             });
+            router.push(`/practical-task/${lessonID}`);
           } else {
             notifications.show({
               title: "You scored less than the pass mark",

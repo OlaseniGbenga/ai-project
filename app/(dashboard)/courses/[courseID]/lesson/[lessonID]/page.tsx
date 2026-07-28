@@ -9,8 +9,8 @@ import {
   useGetLesson,
   usePostCompletedLesson,
 } from "@/features/auth/hooks/useCourse";
-import Quiz from "@/components/quiz/quiz";
 import { useRouter } from "next/navigation";
+
 interface PageProps {
   params: Promise<{
     lessonID: string;
@@ -23,7 +23,7 @@ function Page({ params }: PageProps) {
   const { mutate, isPending } = usePostCompletedLesson(lessonID);
   const router = useRouter();
 
-  const handleSubmit = async () => {
+  const handleContinue = () => {
     mutate(undefined, {
       onSuccess: () => {
         notifications.show({
@@ -31,6 +31,7 @@ function Page({ params }: PageProps) {
           message: "You have completed this lesson",
           color: "brand.5",
         });
+        router.push(`/quiz/${lessonID}`);
       },
       onError: (error: Error) => {
         notifications.show({
@@ -41,13 +42,14 @@ function Page({ params }: PageProps) {
       },
     });
   };
+
   return (
     <div>
       {isLoading && <Skeleton h={400} />}
 
       {!isLoading && (
         <div className="flex flex-col">
-          <div className="flex flex-col  justify-between">
+          <div className="flex flex-col justify-between">
             <div className="mb-2">
               <BackButton />
             </div>
@@ -59,10 +61,9 @@ function Page({ params }: PageProps) {
             <p className="text-gray-500">
               Lesson · {data?.data.durationMinutes}min
             </p>
-            <p className="heading font-black ">{data?.data.title}</p>
+            <p className="heading font-black">{data?.data.title}</p>
           </div>
           <div className="flex flex-col gap-4">
-            {" "}
             <p>{data?.data.content}</p>
             <div className="flex flex-col gap-4 items-center">
               {data?.data.flashcards.map((flashCard) => {
@@ -78,15 +79,13 @@ function Page({ params }: PageProps) {
             </div>
             <Button
               loading={isPending}
-              onClick={() => {
-                router.push(`/quiz/${data?.data.id}`);
-              }}
+              disabled={isPending}
+              onClick={handleContinue}
               className="btn btn-primary self-start"
             >
               Continue
             </Button>
           </div>
-          {/* <Quiz lessonID={lessonID} /> */}
         </div>
       )}
     </div>

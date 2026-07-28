@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
 import { Info } from "lucide-react";
 import AuthHeader from "@/features/auth/components/AuthHeader";
-import AuthProgress from "@/features/auth/components/AuthProgress";
 import AuthInput from "@/features/auth/components/AuthInput";
 import AuthButton from "@/features/auth/components/AuthButton";
 import AuthPageWrapper from "@/features/auth/components/AuthPageWrapper";
@@ -82,7 +81,6 @@ export default function RegisterPage() {
       >
         <Stack gap="xs">
           <AuthHeader />
-          <AuthProgress currentStep={1} totalSteps={6} />
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack gap="xs">
               <AuthInput
@@ -95,8 +93,12 @@ export default function RegisterPage() {
                   form.setFieldValue("email", event.currentTarget.value)
                 }
               />
-              <Group gap={6} align="center">
-                <Info size={14} color="#000000" />
+              <Group gap={6} align="flex-start" wrap="nowrap">
+                <Info
+                  size={14}
+                  color="#000000"
+                  style={{ marginTop: 2, flexShrink: 0 }}
+                />
                 <Text size="xs" c="#000000">
                   Code will be sent to your email for verification!
                 </Text>

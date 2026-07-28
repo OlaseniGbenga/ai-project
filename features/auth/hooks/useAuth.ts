@@ -18,6 +18,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 
 const TOKEN_MAX_AGE_SECONDS = 1800;
+const ONBOARDING_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 export const useRegister = () => {
   return useMutation({
@@ -34,6 +35,7 @@ export const useLogin = () => {
       login(data.data.accessToken);
       localStorage.setItem("user", JSON.stringify(data.data.user));
       document.cookie = `accessToken=${data.data.accessToken}; path=/; max-age=${TOKEN_MAX_AGE_SECONDS}; SameSite=Lax`;
+      document.cookie = `onboardingCompleted=${data.data.user.isOnboardingComplete}; path=/; max-age=${ONBOARDING_COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
     },
   });
 };

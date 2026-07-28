@@ -5,14 +5,12 @@ import {
   Stack,
   Text,
   Box,
-  Anchor,
   Paper,
-  Flex,
   Button,
   ScrollArea,
+  Flex,
 } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { notifications } from "@mantine/notifications";
 import AuthHeader from "@/features/auth/components/AuthHeader";
 import AuthProgress from "@/features/auth/components/AuthProgress";
@@ -26,7 +24,6 @@ import {
   EMERALD,
   ONBOARDING_CARD_STYLE,
   PRIMARY_BUTTON_STYLE,
-  OUTLINE_BUTTON_STYLE,
 } from "@/features/auth/utils/auth.theme";
 import { OnboardingAboutWorkValues } from "@/features/auth/types/onboarding.types";
 
@@ -41,8 +38,8 @@ const OCCUPATIONS = [
 
 const AI_USAGE_OPTIONS = ["Never", "Occasionally", "Constantly"];
 
-const CURRENT_STEP = 3;
-const TOTAL_STEPS = 6;
+const CURRENT_STEP = 1;
+const TOTAL_STEPS = 3;
 
 export default function AboutWorkPage() {
   const router = useRouter();
@@ -61,6 +58,16 @@ export default function AboutWorkPage() {
       });
       return;
     }
+
+    if (values.occupation === "other" && !values.occupationOther.trim()) {
+      notifications.show({
+        title: "Occupation required",
+        message: "Please enter your occupation before proceeding.",
+        color: "red",
+      });
+      return;
+    }
+
     if (!values.aiUsage) {
       notifications.show({
         title: "Selection required",
@@ -69,6 +76,7 @@ export default function AboutWorkPage() {
       });
       return;
     }
+
     localStorage.setItem("onboarding_about_work", JSON.stringify(values));
     router.push("/onboarding/comfort-pace");
   };
@@ -113,11 +121,8 @@ export default function AboutWorkPage() {
               Step {CURRENT_STEP} of {TOTAL_STEPS}
             </Text>
           </Flex>
-          <Text fw={700} size="24px" c="#000000" mb={4}>
-            About your work
-          </Text>
-          <Text size="13px" c="#919191" mb="lg">
-            So we can tailor lessons to your trade and how you use AI.
+          <Text fw={700} size="24px" c="#000000" mb="lg">
+            Tell us about your work
           </Text>
           <ScrollArea style={{ flex: 1 }} offsetScrollbars>
             <Stack gap="xl" pb="md">
@@ -126,7 +131,12 @@ export default function AboutWorkPage() {
                 options={OCCUPATIONS}
                 value={values.occupation}
                 onChange={(value) =>
-                  setValues({ ...values, occupation: value, occupationOther: "" })
+                  setValues({
+                    ...values,
+                    occupation: value,
+                    occupationOther:
+                      value === "other" ? values.occupationOther : "",
+                  })
                 }
                 allowOther
                 otherValue={values.occupationOther}
@@ -146,30 +156,15 @@ export default function AboutWorkPage() {
               />
             </Stack>
           </ScrollArea>
-          <Flex direction={{ base: "column", xs: "row" }} gap="md" pt="lg">
-            <Anchor
-              onClick={() => router.back()}
-              style={{ textDecoration: "none", flex: 1 }}
+          <Box pt="lg">
+            <Button
+              fullWidth
+              onClick={handleContinue}
+              styles={PRIMARY_BUTTON_STYLE}
             >
-              <Button
-                fullWidth
-                variant="outline"
-                leftSection={<ArrowLeft size={14} />}
-                styles={OUTLINE_BUTTON_STYLE}
-              >
-                Back
-              </Button>
-            </Anchor>
-            <Box style={{ flex: 2 }}>
-              <Button
-                fullWidth
-                onClick={handleContinue}
-                styles={PRIMARY_BUTTON_STYLE}
-              >
-                Continue
-              </Button>
-            </Box>
-          </Flex>
+              Continue
+            </Button>
+          </Box>
         </Paper>
       </Stack>
     </AuthPageWrapper>

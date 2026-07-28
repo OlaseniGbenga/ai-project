@@ -100,6 +100,36 @@ export interface LearningPathStatus {
   };
 }
 
+export interface PracTask {
+  id: string;
+  courseId: string;
+  lessonId: string;
+  title: string;
+  instructions: string;
+  businessType: string;
+  customerQuestion: string;
+  recommendedTools: string[];
+  isUnlocked: boolean;
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+  completedAt: string | null; // ISO date string when completed
+}
+
+export interface PostPracTask {
+  task: {
+    id: string;
+    courseId: string;
+    lessonId: string;
+    status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+    completedAt: string | null;
+  };
+  alreadyCompleted: boolean;
+  courseProgress: {
+    totalTasks: number;
+    completedTasks: number;
+    allTasksCompleted: boolean;
+  };
+}
+
 export interface ApiResponse<T = unknown> {
   data: T;
   timestamp: string;
@@ -122,3 +152,5 @@ export type QuizResponse = ApiResponse<{
   scorePercent: number;
   isPassed: boolean;
 }>;
+export type PracTaskResponse = ApiResponse<PracTask>;
+export type PostPracTaskResponse = ApiResponse<PostPracTask>;

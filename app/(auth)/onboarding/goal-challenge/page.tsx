@@ -7,7 +7,7 @@ import {
   Box,
   Anchor,
   Paper,
-  Group,
+  Flex,
   Button,
   ScrollArea,
 } from "@mantine/core";
@@ -21,6 +21,7 @@ import SelectionCardGroup from "@/features/auth/components/SelectionCardGroup";
 import {
   AUTH_FORM_WIDTH,
   ONBOARDING_HEADER_MAX_WIDTH,
+  ONBOARDING_CARD_MAX_WIDTH,
 } from "@/features/auth/utils/auth.validations";
 import {
   OnboardingGoalChallengeValues,
@@ -31,6 +32,12 @@ import {
   DAILY_TIME_ENUM_MAP,
 } from "@/features/auth/types/onboarding.types";
 import { useCompleteOnboarding } from "@/features/auth/hooks/useOnboarding";
+import {
+  EMERALD,
+  ONBOARDING_CARD_STYLE,
+  PRIMARY_BUTTON_STYLE,
+  OUTLINE_BUTTON_STYLE,
+} from "@/features/auth/utils/auth.theme";
 
 const LEARNING_GOALS = [
   "Save time on tasks",
@@ -46,6 +53,9 @@ const BIGGEST_CHALLENGES = [
   "I don't know where / how to start learning",
 ];
 
+const CURRENT_STEP = 3;
+const TOTAL_STEPS = 3;
+
 export default function GoalChallengePage() {
   const router = useRouter();
   const { mutate: completeOnboarding, isPending } = useCompleteOnboarding();
@@ -57,7 +67,7 @@ export default function GoalChallengePage() {
   });
 
   const handleContinue = () => {
-    if (!values.learningGoal && !values.learningGoalOther) {
+    if (!values.learningGoal) {
       notifications.show({
         title: "Selection required",
         message: "Please select your learning goal.",
@@ -65,10 +75,32 @@ export default function GoalChallengePage() {
       });
       return;
     }
-    if (!values.biggestChallenge && !values.biggestChallengeOther) {
+
+    if (values.learningGoal === "other" && !values.learningGoalOther.trim()) {
+      notifications.show({
+        title: "Goal required",
+        message: "Please enter your learning goal before proceeding.",
+        color: "red",
+      });
+      return;
+    }
+
+    if (!values.biggestChallenge) {
       notifications.show({
         title: "Selection required",
         message: "Please select your biggest challenge.",
+        color: "red",
+      });
+      return;
+    }
+
+    if (
+      values.biggestChallenge === "other" &&
+      !values.biggestChallengeOther.trim()
+    ) {
+      notifications.show({
+        title: "Challenge required",
+        message: "Please enter your biggest challenge before proceeding.",
         color: "red",
       });
       return;
@@ -105,10 +137,14 @@ export default function GoalChallengePage() {
           values.learningGoal === "other"
             ? values.learningGoalOther
             : undefined,
-        mainChallenge: values.biggestChallenge || values.biggestChallengeOther,
+        mainChallenge:
+          values.biggestChallenge === "other"
+            ? values.biggestChallengeOther
+            : values.biggestChallenge,
       },
       {
         onSuccess: () => {
+          document.cookie = `onboardingCompleted=true; path=/; max-age=31536000; SameSite=Lax`;
           localStorage.setItem(
             "onboarding_goal_challenge",
             JSON.stringify(values),
@@ -141,19 +177,36 @@ export default function GoalChallengePage() {
       >
         <Box mb="sm" maw={ONBOARDING_HEADER_MAX_WIDTH} mx="auto" w="100%">
           <AuthHeader />
-          <AuthProgress currentStep={5} totalSteps={6} />
+          <AuthProgress currentStep={CURRENT_STEP} totalSteps={TOTAL_STEPS} />
         </Box>
         <Paper
-          radius="lg"
-          p="xl"
+          radius={24}
+          p={{ base: "md", sm: "xl" }}
           bg="white"
+          maw={ONBOARDING_CARD_MAX_WIDTH}
+          mx="auto"
+          w="100%"
           style={{
             flex: 1,
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
+            ...ONBOARDING_CARD_STYLE,
           }}
         >
+          <Flex justify="space-between" align="center" mb="md">
+            <Text
+              size="12px"
+              fw={700}
+              c={EMERALD[700]}
+              style={{ letterSpacing: "0.5px" }}
+            >
+              ONBOARDING
+            </Text>
+            <Text size="12px" fw={600} c="#8E8E8E">
+              Step {CURRENT_STEP} of {TOTAL_STEPS}
+            </Text>
+          </Flex>
           <Text fw={700} size="24px" c="#000000" mb={4}>
             Your goal & challenge
           </Text>
@@ -170,7 +223,8 @@ export default function GoalChallengePage() {
                   setValues({
                     ...values,
                     learningGoal: value,
-                    learningGoalOther: "",
+                    learningGoalOther:
+                      value === "other" ? values.learningGoalOther : "",
                   })
                 }
                 allowOther
@@ -191,7 +245,8 @@ export default function GoalChallengePage() {
                   setValues({
                     ...values,
                     biggestChallenge: value,
-                    biggestChallengeOther: "",
+                    biggestChallengeOther:
+                      value === "other" ? values.biggestChallengeOther : "",
                   })
                 }
                 allowOther
@@ -206,18 +261,16 @@ export default function GoalChallengePage() {
               />
             </Stack>
           </ScrollArea>
-          <Group pt="lg" gap="md">
+          <Flex direction={{ base: "column", xs: "row" }} gap="md" pt="lg">
             <Anchor
-              onClick={() => router.back()}
+              onClick={() => router.replace("/onboarding/comfort-pace")}
               style={{ textDecoration: "none", flex: 1 }}
             >
               <Button
                 fullWidth
-                size="md"
                 variant="outline"
-                color="brand.5"
-                radius="md"
                 leftSection={<ArrowLeft size={14} />}
+                styles={OUTLINE_BUTTON_STYLE}
               >
                 Back
               </Button>
@@ -225,16 +278,14 @@ export default function GoalChallengePage() {
             <Box style={{ flex: 2 }}>
               <Button
                 fullWidth
-                size="md"
-                color="brand.5"
-                radius="md"
                 loading={isPending}
                 onClick={handleContinue}
+                styles={PRIMARY_BUTTON_STYLE}
               >
                 Generate my path
               </Button>
             </Box>
-          </Group>
+          </Flex>
         </Paper>
       </Stack>
     </AuthPageWrapper>

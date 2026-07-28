@@ -9,7 +9,10 @@ import {
   useVerifyForgotPasswordOtp,
 } from "@/features/auth/hooks/useAuth";
 import { notifications } from "@mantine/notifications";
-import { cn } from "@/utils";
+import {
+  EMERALD,
+  PRIMARY_BUTTON_STYLE,
+} from "@/features/auth/utils/auth.theme";
 
 function OTForm() {
   const router = useRouter();
@@ -53,8 +56,6 @@ function OTForm() {
       },
     );
   };
-
-
 
   useEffect(() => {
     if (countdown === 0) {
@@ -100,13 +101,14 @@ function OTForm() {
       },
     );
   };
+
   return (
     <form
       onSubmit={form.onSubmit(handleSubmit)}
-      className="space-y-4 w-full  sm:w-101.5"
+      className="space-y-5 w-full sm:w-101.5"
     >
-      <p className="font-bold text-[15px]">OTP</p>
-      <div className="flex flex-col items-center self-center gap-4 mb-8">
+      <p className="font-bold text-[16px]">Enter the code we sent you</p>
+      <div className="flex flex-col items-center self-center gap-4 mb-4">
         <PinInput
           size="lg"
           name="pin"
@@ -115,40 +117,45 @@ function OTForm() {
           oneTimeCode
           {...form.getInputProps("otp")}
           placeholder=""
-          classNames={{
-            input: cn("input"),
+          styles={{
+            input: {
+              borderColor: EMERALD[200],
+              backgroundColor: "rgba(236, 253, 245, 0.6)",
+              borderRadius: "12px",
+              color: "#000000",
+            },
           }}
         />
-        
 
         <Text size="13px" ta="center" c="#000000">
-       Didn&apos;t receive any code?{" "}
+          Didn&apos;t receive any code?{" "}
           {resendReady ? (
             <Anchor
               component="span"
-              c="brand.5"
-              fw={600}
-              size="16px"
+              fw={700}
+              size="13px"
               onClick={handleResend}
+              style={{ color: EMERALD[700] }}
             >
               {resending ? "Sending..." : "Resend code"}
             </Anchor>
           ) : (
-            <Text span size="16px" fw={600} c="#919191">
+            <Text span size="13px" fw={600} c="#919191">
               Resend code
             </Text>
           )}
         </Text>
-        <Text ta="center" fw={600} c="#000000" pt={8}>
+        <Text ta="center" fw={600} size="13px" c="#919191">
           0:{countdown < 10 ? `0${countdown}` : countdown}
         </Text>
       </div>
 
       <Button
-        className={cn("btn btn-primary")}
         type="submit"
+        fullWidth
         loading={isPending}
         disabled={isPending}
+        styles={PRIMARY_BUTTON_STYLE}
       >
         Continue
       </Button>

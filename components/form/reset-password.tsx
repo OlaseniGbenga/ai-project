@@ -5,7 +5,27 @@ import { TextInput, Button } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useForgotPassword } from "@/features/auth/hooks/useAuth";
-import { cn } from "@/utils";
+import {
+  EMERALD,
+  PRIMARY_BUTTON_STYLE,
+} from "@/features/auth/utils/auth.theme";
+
+const inputStyles = {
+  label: {
+    fontSize: "14px",
+    fontWeight: 600,
+    marginBottom: "8px",
+    color: EMERALD[900],
+  },
+  input: {
+    backgroundColor: "rgba(236, 253, 245, 0.6)",
+    borderColor: EMERALD[200],
+    borderRadius: "12px",
+    height: "52px",
+    fontSize: "16px",
+    color: "#000000",
+  },
+};
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -14,7 +34,6 @@ function ResetPasswordForm() {
     initialValues: {
       email: "",
     },
-
     validate: {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
     },
@@ -43,28 +62,29 @@ function ResetPasswordForm() {
       },
     );
   };
+
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)} className="space-y-4 w-full  sm:w-101.5 ">
-      <p className="font-bold text-[15px]">Input Email To Reset Password</p>
+    <form
+      onSubmit={form.onSubmit(handleSubmit)}
+      className="space-y-5 w-full sm:w-101.5"
+    >
+      <p className="font-bold text-[16px]">Input Email To Reset Password</p>
       <TextInput
-        size="md"
+        size="lg"
         label="Email"
         placeholder="example@email.com"
         {...form.getInputProps("email")}
-        classNames={{
-          input: cn("input"),
-        }}
+        styles={inputStyles}
       />
-
       <Button
-        className={cn("btn btn-primary ")}
         type="submit"
+        fullWidth
         loading={isPending}
         disabled={isPending}
+        styles={PRIMARY_BUTTON_STYLE}
       >
         Send Code
       </Button>
-      
     </form>
   );
 }

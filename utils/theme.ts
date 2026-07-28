@@ -1,20 +1,19 @@
-// theme/index.ts
 import { createTheme, CSSVariablesResolver } from "@mantine/core";
 
 export const theme = createTheme({
   primaryColor: "brand",
   colors: {
     brand: [
-      "#e6f4ec",
-      "#c2e0ce",
-      "#9dcbb0",
-      "#78b692",
-      "#53a174",
-      "#066F33",
-      "#055c2b",
-      "#044922",
-      "#03361a",
-      "#022311",
+      "#ecfdf5",
+      "#d1fae5",
+      "#a7f3d0",
+      "#6ee7b7",
+      "#34d399",
+      "#047857",
+      "#065f46",
+      "#064e3b",
+      "#022c22",
+      "#011a15",
     ],
   },
 
@@ -41,8 +40,6 @@ export const theme = createTheme({
   headings: {
     fontFamily: "Inter, sans-serif",
   },
-
-  
 });
 
 export const variablesResolver: CSSVariablesResolver = () => ({
@@ -50,9 +47,8 @@ export const variablesResolver: CSSVariablesResolver = () => ({
   light: {
     "--mantine-color-body": "white",
     "--mantine-color-text": "black",
-
-    /* Optional: map Mantine theme colors */
-    "--mantine-primary-color-filled": "black",
+    "--mantine-primary-color-filled": "#047857",
+    "--mantine-primary-color-filled-hover": "#065f46",
   },
 
   dark: {

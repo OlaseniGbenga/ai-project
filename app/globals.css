@@ -151,3 +151,28 @@ body {
   font-size: 12px;
   margin-top: 4px;
 }
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --yellow: #facc15;
+  --primary-50: #ecfdf5;
+  --primary-600: #059669;
+  --primary-700: #047857;
+  --primary-800: #065f46;
+  --neutral-500: #8e8e8e;
+  --neutral-700: #423e3e;
+  --neutral-900: #111111;
+}
+
+@theme inline {
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --color-primary-50: #ecfdf5;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-neutral-500: #8e8e8e;
+  --color-neutral-700: #423e3e;
+  --color-neutral-900: #111111;
+}

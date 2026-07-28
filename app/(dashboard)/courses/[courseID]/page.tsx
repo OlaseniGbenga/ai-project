@@ -94,7 +94,7 @@ function Page({ params }: PageProps) {
               <div key={item.id ?? index} className="flex flex-col gap-4">
                 <div className="flex  justify-between flex-col md:flex-row   gap-4 ">
                   <div className="flex gap-4 items-center flex-row ">
-                    <p className="flex h-10 w-10 items-center justify-center rounded-full border-1 border-primary-700 bg-primary-50  text-primary-700">
+                    <p className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-700 bg-primary-50  text-primary-700">
                       {index + 1}
                     </p>
                     <div>

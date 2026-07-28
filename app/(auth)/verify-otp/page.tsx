@@ -5,7 +5,6 @@ import { Stack, Text, Anchor, Box } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
 import AuthHeader from "@/features/auth/components/AuthHeader";
-import AuthProgress from "@/features/auth/components/AuthProgress";
 import OtpInput from "@/features/auth/components/OtpInput";
 import AuthButton from "@/features/auth/components/AuthButton";
 import AuthPageWrapper from "@/features/auth/components/AuthPageWrapper";
@@ -13,6 +12,7 @@ import {
   AUTH_FORM_WIDTH,
   AUTH_FORM_MAX_WIDTH,
 } from "@/features/auth/utils/auth.validations";
+import { EMERALD } from "@/features/auth/utils/auth.theme";
 import {
   useVerifyOtp,
   useResendOtp,
@@ -103,13 +103,13 @@ export default function VerifyOtpPage() {
               onSuccess: () => {
                 localStorage.removeItem("pendingPassword");
                 setTimeout(() => {
-                  router.push("/onboarding/about-work");
+                  router.replace("/onboarding/about-work");
                 }, 100);
               },
               onError: () => {
                 localStorage.removeItem("pendingPassword");
                 setTimeout(() => {
-                  router.push("/onboarding/about-work");
+                  router.replace("/onboarding/about-work");
                 }, 100);
               },
             },
@@ -140,23 +140,29 @@ export default function VerifyOtpPage() {
           justifyContent: "space-between",
         }}
       >
-        <Stack gap="md">
+        <Stack gap="sm">
           <AuthHeader />
-          <Text fw={700} size="xl" c="#000000">
-            OTP Verification
-          </Text>
-          <AuthProgress currentStep={2} totalSteps={6} />
-          <OtpInput value={otp} onChange={setOtp} />
-          <Stack gap={4} align="center">
+          <Stack gap={2} align="center">
+            <Text fw={800} size="20px" c="#000000" ta="center">
+              Verify your email
+            </Text>
+            <Text size="13px" c="#8E8E8E" ta="center">
+              Enter the 6-digit code we sent to your inbox
+            </Text>
+          </Stack>
+          <Box style={{ display: "flex", justifyContent: "center" }}>
+            <OtpInput value={otp} onChange={setOtp} />
+          </Box>
+          <Stack gap={6} align="center">
             <Text size="13px" ta="center" c="#000000">
-              Didn't receive any code?{" "}
+              Didn&apos;t receive any code?{" "}
               {resendReady ? (
                 <Anchor
                   component="span"
-                  c="brand.5"
-                  fw={600}
+                  fw={700}
                   size="13px"
                   onClick={handleResend}
+                  style={{ color: EMERALD[700] }}
                 >
                   {resending ? "Sending..." : "Resend code"}
                 </Anchor>
@@ -166,12 +172,12 @@ export default function VerifyOtpPage() {
                 </Text>
               )}
             </Text>
-            <Text fw={600} size="14px" c="#000000">
+            <Text fw={600} size="13px" c="#919191" ta="center">
               0:{countdown < 10 ? `0${countdown}` : countdown}
             </Text>
           </Stack>
         </Stack>
-        <Box pb="md">
+        <Box pt="lg" pb="md">
           <AuthButton
             label="Continue"
             onClick={handleSubmit}
