@@ -6,6 +6,8 @@ import {
   useGetLearningPath,
   useGetLearningPathStatus,
 } from "@/features/auth/hooks/useCourse";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 function Page() {
   const { data, isLoading, isError, error } = useGetLearningPath();
@@ -14,10 +16,18 @@ function Page() {
   const courseLessons = data?.data.courses ?? [];
   const router = useRouter();
 
-  if (!pathStatus?.data.isReady ){
-    return (<p>
-      {pathStatus?.data.message}
-    </p>)
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (pathStatus?.data.isReady) {
+      queryClient.invalidateQueries({
+        queryKey: ["learning-path"],
+      });
+    }
+  }, [pathStatus?.data.isReady, queryClient]);
+
+  if (!pathStatus?.data.isReady) {
+    return <p>{pathStatus?.data.message}</p>;
   }
 
   if (isError) {
