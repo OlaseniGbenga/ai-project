@@ -34,6 +34,8 @@ function Page({ params }: PageProps) {
         return "Completed";
       case "LOCKED":
         return "Locked";
+      case "NOT_STARTED":
+        return "Not started";
       default:
         return status;
     }

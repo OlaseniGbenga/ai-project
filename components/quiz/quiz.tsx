@@ -7,6 +7,7 @@ import { usePostCompletedLesson } from "@/features/auth/hooks/useCourse";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { usePostSubmitQuiz } from "@/features/auth/hooks/useCourse";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface QuizOption {
   id: string;
@@ -43,7 +44,7 @@ export default function Quiz({ quizData, lessonID }: QuizProps) {
 
   // const completionTriggeredRef = useRef(false);
   // const { mutate: completeLesson } = usePostCompletedLesson(lessonID ?? "");
-
+  const queryClient = useQueryClient();
   const questions = quizData.questions;
   const question = questions[currentQuestionIndex];
   const totalQuestions = questions.length;
@@ -101,6 +102,9 @@ export default function Quiz({ quizData, lessonID }: QuizProps) {
               title: "Passed",
               message: "You scored above the passmark",
               color: "brand.5",
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["lessons"],
             });
             router.push(`/practical-task/${lessonID}`);
           } else {
