@@ -25,7 +25,9 @@ export default function TaskCard({ lessonID, TaskData }: TaskProps) {
           });
 
           if (res?.data?.nextLessonId) {
-            router.push(`/practical-task/${res?.data?.nextLessonId}`);
+            router.push(
+              `/courses/${res?.data.task.courseId}/lesson/${res?.data.nextLessonId}`,
+            );
           } else {
             router.push(`/courses`);
           }
