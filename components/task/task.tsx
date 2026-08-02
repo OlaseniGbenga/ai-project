@@ -23,7 +23,12 @@ export default function TaskCard({ lessonID, TaskData }: TaskProps) {
             message: "You have completed the task",
             color: "brand.5",
           });
-          router.push(`/courses`);
+
+          if (res?.data?.nextLessonId) {
+            router.push(`/practical-task/${res?.data?.nextLessonId}`);
+          } else {
+            router.push(`/courses`);
+          }
         } else {
           notifications.show({
             title: "Try again",
@@ -42,6 +47,7 @@ export default function TaskCard({ lessonID, TaskData }: TaskProps) {
       },
     });
   };
+
   return (
     <div className="rounded-4xl flex flex-col gap-5  border-2 border-dashed border-emerald-600  p-10">
       {/* Header */}

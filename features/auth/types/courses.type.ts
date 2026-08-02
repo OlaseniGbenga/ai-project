@@ -114,13 +114,30 @@ export interface PracTask {
   completedAt: string | null; // ISO date string when completed
 }
 
-export interface PostPracTask {
+// export interface PostPracTask {
+//   task: {
+//     id: string;
+//     courseId: string;
+//     lessonId: string;
+//     status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+//     completedAt: string | null;
+//   };
+//   alreadyCompleted: boolean;
+//   courseProgress: {
+//     totalTasks: number;
+//     completedTasks: number;
+//     allTasksCompleted: boolean;
+//   };
+// }
+
+ export interface PostPracTask {
+  nextLessonId: string;
   task: {
     id: string;
     courseId: string;
     lessonId: string;
-    status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
-    completedAt: string | null;
+    status: "COMPLETED" | "PENDING" | "IN_PROGRESS";
+    completedAt: string;
   };
   alreadyCompleted: boolean;
   courseProgress: {
