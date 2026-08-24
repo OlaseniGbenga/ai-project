@@ -6,6 +6,7 @@ import { getProgressPercentage } from "@/utils";
 import { useRouter } from "next/navigation";
 import { useGetLessons } from "@/features/auth/hooks/useCourse";
 import BackButton from "@/components/ui/btn/back-button";
+import GenerateCertificateBanner from "@/features/certificate/components/GenerateCertificateBanner";
 
 interface PageProps {
   params: Promise<{
@@ -34,8 +35,8 @@ function Page({ params }: PageProps) {
         return "Completed";
       case "LOCKED":
         return "Locked";
-      case "NOT_STARTED":
-        return "Not started";
+        case "NOT_STARTED":
+          return "Not started"
       default:
         return status;
     }
@@ -91,6 +92,11 @@ function Page({ params }: PageProps) {
               }}
             /> */}
           </div>
+          {data?.data.completedLessons === data?.data.totalLessons &&
+            (data?.data.totalLessons ?? 0) > 0 && (
+              <GenerateCertificateBanner />
+            )}
+
           <div className="flex flex-col gap-4">
             {courseLessons.map((item, index) => (
               <div key={item.id ?? index} className="flex flex-col gap-4">

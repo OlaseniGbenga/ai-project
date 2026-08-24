@@ -7,6 +7,7 @@ import {
   forgotPassword,
   verifyOtpForgotPassword,
   resetPassword,
+  updateUserProfile,
 } from "@/features/auth/services/auth.service";
 import {
   RegisterFormValues,
@@ -15,6 +16,7 @@ import {
   verifyOtpForgotPasswordPayload,
   resetPasswordPayload,
 } from "@/features/auth/types/auth.types";
+import { UpdateUserProfile } from "@/features/auth/types/user.types";
 import { useAuth } from "@/contexts/AuthContext";
 
 const TOKEN_MAX_AGE_SECONDS = 1800;
@@ -71,5 +73,21 @@ export const useVerifyForgotPasswordOtp = () => {
 export const useResetPassword = () => {
   return useMutation({
     mutationFn: (payload: resetPasswordPayload) => resetPassword(payload),
+  });
+};
+
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: (payload: UpdateUserProfile) => updateUserProfile(payload),
+    onSuccess: (_, variables) => {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        const user = JSON.parse(stored);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...user, ...variables }),
+        );
+      }
+    },
   });
 };

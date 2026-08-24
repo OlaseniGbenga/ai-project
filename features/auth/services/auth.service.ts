@@ -10,6 +10,7 @@ import {
   verifyOtpForgotPasswordResponse,
   resetPasswordPayload,
 } from "@/features/auth/types/auth.types";
+import { UpdateUserProfile, UserProfileResponse } from "@/features/auth/types/user.types";
 
 export const registerUser = async (
   payload: RegisterFormValues,
@@ -78,5 +79,20 @@ export const resetPassword = async (
     "/auth/reset-password",
     payload,
   );
+  return response.data;
+};
+
+export const updateUserProfile = async (
+  payload: UpdateUserProfile,
+): Promise<MessageResponse> => {
+  const response = await axiosInstance.patch<MessageResponse>(
+    "/users/me",
+    payload,
+  );
+  return response.data;
+};
+
+export const getMe = async (): Promise<UserProfileResponse> => {
+  const response = await axiosInstance.get<UserProfileResponse>("/users/me");
   return response.data;
 };

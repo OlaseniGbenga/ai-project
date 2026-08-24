@@ -1,6 +1,11 @@
-import { Download, Share2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 
-export function CertificateHeader() {
+interface CertificateHeaderProps {
+  onDownload: () => void;
+  isDownloading: boolean;
+}
+
+export function CertificateHeader({ onDownload, isDownloading }: CertificateHeaderProps) {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -9,26 +14,23 @@ export function CertificateHeader() {
           Your Achievement Certificate
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-500">
-          View, download, or share your learning achievement with your network.
+          View or download your learning achievement certificate.
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <button
-          type="button"
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] border border-primary-700 px-4 text-sm font-semibold text-primary-700 transition-colors hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
-        >
-          <Share2 aria-hidden="true" className="h-4 w-4" />
-          Share
-        </button>
-        <button
-          type="button"
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-primary-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
-        >
+      <button
+        type="button"
+        onClick={onDownload}
+        disabled={isDownloading}
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-[10px] bg-primary-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 disabled:opacity-60 cursor-pointer"
+      >
+        {isDownloading ? (
+          <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+        ) : (
           <Download aria-hidden="true" className="h-4 w-4" />
-          Download
-        </button>
-      </div>
+        )}
+        {isDownloading ? "Downloading…" : "Download"}
+      </button>
     </header>
   );
 }

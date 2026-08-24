@@ -19,3 +19,21 @@ export interface CertificateStatCardProps {
   label: string;
   value: string;
 }
+
+// API shapes
+export interface CertificateData {
+  id: string;
+  certificateId: string;
+  holderName: string;
+  trade: string;
+  learningLevel: string;
+  completionDate: string;
+  issuedAt: string;
+  verificationUrl: string;
+  downloadUrl: string;
+}
+
+export interface CertificateResponse {
+  data: CertificateData;
+  timestamp: string;
+}
