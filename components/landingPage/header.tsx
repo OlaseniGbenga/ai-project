@@ -25,7 +25,16 @@ export function Header() {
             <a href="#faqs">FAQs</a>
           </Group>
           <Group visibleFrom="sm">
-            <Button bg="#43AC47" c="white" radius="11.3px" fw={400}>
+            <Button
+              component="a"
+              href="https://efd0f7f8.sibforms.com/serve/MUIFAEMA76qjmVSSo2dpDtmBZN4Auwy8tCVTpcxjyZ7djhWfPWS1-ZXmPpYbeOsmz6M4ohJiR-QhS-j3UfLcFzTDEEvqaeztuVabh6NE6JdRN98a3vK0G-SEBoLSnU6YxKei07YcnJZVaAGkdS-RIhi2ZrC0lkw6Jipe128hE4JoC-zTudbPGwgEaFfQNLM9YX9FuKRVHxFLFdghUQ=="
+              target="_blank"
+              rel="noopener noreferrer"
+              bg="#43AC47"
+              c="white"
+              radius="11.3px"
+              fw={400}
+            >
               Waitlist
             </Button>
           </Group>

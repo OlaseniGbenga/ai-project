@@ -7,7 +7,16 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["@mantine/core", "@mantine/hooks"],
   },
   images: {
-    domains: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.figma.com",
+      },
+      {
+        protocol: "https",
+        hostname: "figma.com",
+      },
+    ],
   },
 };
 

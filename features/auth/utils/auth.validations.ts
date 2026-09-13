@@ -4,6 +4,9 @@ export const AUTH_FORM_MAX_WIDTH = "438px";
 export const ONBOARDING_HEADER_MAX_WIDTH = "600px";
 export const ONBOARDING_CARD_MAX_WIDTH = "700px";
 
+export const validateFullName = (value: string) =>
+  value.trim().length >= 2 ? null : "Please enter your full name.";
+
 export const validateEmail = (value: string) =>
   /^\S+@\S+\.\S+$/.test(value) ? null : "Invalid email address, try again.";
 

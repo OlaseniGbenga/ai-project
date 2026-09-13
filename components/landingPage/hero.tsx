@@ -45,8 +45,9 @@ export default function Hero() {
           Get Started
         </Button>
 
-    
         <Button
+          component="a"
+          href="#courses"
           bg={"#637077"}
           color={"#fff"}
           type="submit"

@@ -1,6 +1,7 @@
 import axiosInstance from "./axios.instance";
 
 export interface OnboardingPayload {
+  fullName: string;
   tradeId: string;
   otherTrade?: string;
   aiFamiliarityLevel: string;

@@ -1,4 +1,5 @@
 export interface OnboardingAboutWorkValues {
+  fullName: string;
   occupation: string;
   occupationOther: string;
   aiUsage: string;

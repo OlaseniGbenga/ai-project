@@ -8,7 +8,7 @@ const OtpInput: React.FC<OtpInputProps> = ({ value, onChange }) => {
   };
 
   return (
-    <Group justify="center" my="md">
+    <Group justify="flex-start" w="100%" my="md">
       <PinInput
         length={6}
         value={value.join("")}

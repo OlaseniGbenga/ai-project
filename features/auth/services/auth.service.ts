@@ -1,6 +1,6 @@
 import axiosInstance from "./axios.instance";
 import {
-  RegisterFormValues,
+  RegisterStepOneValues,
   LoginFormValues,
   VerifyOtpPayload,
   RegisterResponse,
@@ -13,7 +13,7 @@ import {
 import { UpdateUserProfile, UserProfileResponse } from "@/features/auth/types/user.types";
 
 export const registerUser = async (
-  payload: RegisterFormValues,
+  payload: RegisterStepOneValues,
 ): Promise<RegisterResponse> => {
   const response = await axiosInstance.post<RegisterResponse>(
     "/auth/register",

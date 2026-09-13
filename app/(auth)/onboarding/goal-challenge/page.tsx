@@ -32,6 +32,7 @@ import {
   DAILY_TIME_ENUM_MAP,
 } from "@/features/auth/types/onboarding.types";
 import { useCompleteOnboarding } from "@/features/auth/hooks/useOnboarding";
+import { useUpdateProfile } from "@/features/auth/hooks/useAuth";
 import {
   EMERALD,
   ONBOARDING_CARD_STYLE,
@@ -59,13 +60,15 @@ const TOTAL_STEPS = 3;
 export default function GoalChallengePage() {
   const router = useRouter();
   const { mutate: completeOnboarding, isPending } = useCompleteOnboarding();
+  const { mutate: updateProfile, isPending: isUpdatingProfile } =
+    useUpdateProfile();
   const [values, setValues] = useState<OnboardingGoalChallengeValues>({
     learningGoal: "",
     learningGoalOther: "",
     biggestChallenge: "",
     biggestChallengeOther: "",
   });
-
+  const [showSuccess, setShowSuccess] = useState(false);
   const handleContinue = () => {
     if (!values.learningGoal) {
       notifications.show({
@@ -122,38 +125,57 @@ export default function GoalChallengePage() {
     const dailyLearningTime =
       DAILY_TIME_ENUM_MAP[comfortPace.dailyTime] ?? "TEN_MINUTES";
 
-    completeOnboarding(
-      {
-        tradeId,
-        otherTrade:
-          aboutWork.occupation === "other"
-            ? aboutWork.occupationOther
-            : undefined,
-        aiFamiliarityLevel,
-        technologyComfortLevel,
-        dailyLearningTime,
-        goalId,
-        otherGoal:
-          values.learningGoal === "other"
-            ? values.learningGoalOther
-            : undefined,
-        mainChallenge:
-          values.biggestChallenge === "other"
-            ? values.biggestChallengeOther
-            : values.biggestChallenge,
-      },
+    const nameParts = aboutWork.fullName.trim().split(/\s+/);
+    const firstName = nameParts.shift() ?? "";
+    const lastName = nameParts.join(" ") || firstName;
+
+    updateProfile(
+      { firstName, lastName },
       {
         onSuccess: () => {
-          document.cookie = `onboardingCompleted=true; path=/; max-age=31536000; SameSite=Lax`;
-          localStorage.setItem(
-            "onboarding_goal_challenge",
-            JSON.stringify(values),
+          completeOnboarding(
+            {
+              fullName: aboutWork.fullName,
+              tradeId,
+              otherTrade:
+                aboutWork.occupation === "other"
+                  ? aboutWork.occupationOther
+                  : undefined,
+              aiFamiliarityLevel,
+              technologyComfortLevel,
+              dailyLearningTime,
+              goalId,
+              otherGoal:
+                values.learningGoal === "other"
+                  ? values.learningGoalOther
+                  : undefined,
+              mainChallenge:
+                values.biggestChallenge === "other"
+                  ? values.biggestChallengeOther
+                  : values.biggestChallenge,
+            },
+            {
+              onSuccess: () => {
+                document.cookie = `onboardingCompleted=true; path=/; max-age=31536000; SameSite=Lax`;
+                localStorage.setItem(
+                  "onboarding_goal_challenge",
+                  JSON.stringify(values),
+                );
+                setShowSuccess(true);
+              },
+              onError: (err: Error) => {
+                notifications.show({
+                  title: "Onboarding failed",
+                  message: err.message,
+                  color: "red",
+                });
+              },
+            },
           );
-          router.push("/onboarding/learning-path");
         },
         onError: (err: Error) => {
           notifications.show({
-            title: "Onboarding failed",
+            title: "Unable to save your name",
             message: err.message,
             color: "red",
           });
@@ -196,22 +218,22 @@ export default function GoalChallengePage() {
         >
           <Flex justify="space-between" align="center" mb="md">
             <Text
-              size="12px"
+              size="13px"
               fw={700}
               c={EMERALD[700]}
               style={{ letterSpacing: "0.5px" }}
             >
               ONBOARDING
             </Text>
-            <Text size="12px" fw={600} c="#8E8E8E">
+            <Text size="13px" fw={600} c="#8E8E8E">
               Step {CURRENT_STEP} of {TOTAL_STEPS}
             </Text>
           </Flex>
-          <Text fw={700} size="24px" c="#000000" mb={4}>
+          <Text fw={700} size="28px" c="#000000" mb={4}>
             Your goal & challenge
           </Text>
-          <Text size="13px" c="#919191" mb="lg">
-            Tell us what success looks like — and what's in the way.
+          <Text size="15px" c="#919191" mb="lg">
+            Tell us what success looks like — and what&apos;s in the way.
           </Text>
           <ScrollArea style={{ flex: 1 }} offsetScrollbars>
             <Stack gap="xl" pb="md">
@@ -278,7 +300,7 @@ export default function GoalChallengePage() {
             <Box style={{ flex: 2 }}>
               <Button
                 fullWidth
-                loading={isPending}
+                loading={isPending || isUpdatingProfile}
                 onClick={handleContinue}
                 styles={PRIMARY_BUTTON_STYLE}
               >
@@ -288,6 +310,7 @@ export default function GoalChallengePage() {
           </Flex>
         </Paper>
       </Stack>
+
     </AuthPageWrapper>
   );
 }

@@ -1,23 +1,33 @@
+
 import React from "react";
 import { PasswordInput, TextInput, Text } from "@mantine/core";
 import { AuthInputProps } from "../types/auth.types";
-import { EMERALD } from "../utils/auth.theme";
 
 const inputStyles = {
-  label: {
-    fontSize: "14px",
-    fontWeight: 600,
-    marginBottom: "6px",
-    color: EMERALD[900],
-  },
   input: {
-    backgroundColor: "rgba(236, 253, 245, 0.6)",
-    borderColor: EMERALD[200],
-    borderRadius: "12px",
-    height: "52px",
-    fontSize: "16px",
-    marginBottom: "4px",
-    color: "#000000",
+    height: "48px",
+    backgroundColor: "#ffffff",
+    border: "1px solid #dedede",
+    borderRadius: "8px",
+    fontSize: "14px",
+    color: "#171717",
+    paddingLeft: "14px",
+    paddingRight: "14px",
+    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+
+    "&:focus": {
+      borderColor: "#3caf4a",
+      boxShadow: "0 0 0 2px rgba(60, 175, 74, 0.08)",
+    },
+
+    "&::placeholder": {
+      color: "#999999",
+      opacity: 1,
+    },
+  },
+
+  innerInput: {
+    height: "48px",
   },
 };
 
@@ -30,13 +40,13 @@ const AuthInput: React.FC<AuthInputProps> = ({
   onChange,
 }) => {
   const shared = {
-    label,
+    label: label || undefined,
     placeholder,
     value,
     onChange,
-    size: "lg" as const,
+    size: "md" as const,
     styles: inputStyles,
-    className: "auth-input",
+    error: false,
   };
 
   return (
@@ -46,8 +56,13 @@ const AuthInput: React.FC<AuthInputProps> = ({
       ) : (
         <TextInput {...shared} type={type} />
       )}
+
       {error && (
-        <Text size="12px" c="#fa5252" mt={4}>
+        <Text
+          size="12px"
+          c="#fa5252"
+          mt={4}
+        >
           {error}
         </Text>
       )}

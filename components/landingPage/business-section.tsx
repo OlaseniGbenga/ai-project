@@ -53,11 +53,11 @@ export default function BusinessSection() {
 
           <article className="relative h-[470px] overflow-hidden rounded-xl bg-[#082a35] text-white">
             <Image
-              src={`${businessAssets}/card-image-1.png`}
+              src={`${businessAssets}/card-image-1.webp`}
               alt="A craftsperson working in a workshop"
               fill
               sizes="(max-width: 768px) 100vw, 358px"
-              className="object-cover blur-[1.5px]"
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(5,33,40,0.1)] via-[rgba(5,33,40,0.3)] to-[rgba(5,33,40,0.9)]" />
             <div className="absolute left-8 top-8 flex items-start gap-3">
@@ -72,12 +72,12 @@ export default function BusinessSection() {
                 Work Smarter
               </h2>
             </div>
-            <div className="absolute bottom-0 left-1.5 right-1.5 rounded-xl border border-white/15 bg-white/[0.08] px-[19px] py-6">
+            {/* <div className="absolute bottom-0 left-1.5 right-1.5 rounded-xl border border-white/15 bg-white/[0.08] px-[19px] py-6">
               <p className="max-w-[277px] text-base leading-6 text-[#f5f5f5]">
                 Use AI to plan better, communicate with customers, market your
                 services, and handle everyday business tasks.
               </p>
-            </div>
+            </div> */}
           </article>
 
           <article className="relative h-[470px] overflow-hidden rounded-xl bg-white">

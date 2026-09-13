@@ -42,17 +42,25 @@ axiosInstance.interceptors.response.use(
     markActivity();
     return response;
   },
-  // (error) => {
-  //   if (error.response?.status === 401 || error.response?.status === 403) {
-  //     clearAuthSession();
-  //   }
+  (error) => {
+    const data = error.response?.data;
+    const status = error.response?.status;
 
-  //   const message =
-  //     error.response?.data?.message?.message ||
-  //     error.response?.data?.message ||
-  //     "Something went wrong";
-  //   return Promise.reject(new Error(message));
-  // },
+    if (status === 401) {
+      clearAuthSession();
+    }
+
+    const message =
+      data?.message?.message ||
+      (typeof data?.message === "string" ? data.message : null) ||
+      "Something went wrong";
+
+    const enrichedError = new Error(message) as Error & { status?: number; emailVerified?: boolean };
+    enrichedError.status = status;
+    enrichedError.emailVerified = data?.message?.emailVerified;
+
+    return Promise.reject(enrichedError);
+  },
 );
 
 export default axiosInstance;

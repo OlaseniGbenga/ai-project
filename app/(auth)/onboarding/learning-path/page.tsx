@@ -53,7 +53,7 @@ export default function LearningPathPage() {
         >
           <Flex justify="space-between" align="center" mb="md">
             <Text
-              size="12px"
+              size="13px"
               fw={700}
               c={EMERALD[700]}
               style={{ letterSpacing: "0.5px" }}
@@ -73,17 +73,17 @@ export default function LearningPathPage() {
               height={120}
               priority
             />
-            <Text fw={700} size="24px" c="#000000" ta="center">
+            <Text fw={700} size="28px" c="#000000" ta="center">
               Your Learning Path is Ready
             </Text>
             <Stack gap={12} w="100%">
-              <Text size="14px" c="#000000" fw={500}>
+              <Text size="15px" c="#000000" fw={500}>
                 Based on your answers, we&apos;ll help you:
               </Text>
               {LEARNING_PATH_ITEMS.map((item) => (
                 <Group key={item} gap={10} align="center">
                   <Check size={16} color={EMERALD[600]} />
-                  <Text size="14px" c={EMERALD[700]} fw={500}>
+                  <Text size="15px" c={EMERALD[700]} fw={500}>
                     {item}
                   </Text>
                 </Group>
@@ -92,6 +92,7 @@ export default function LearningPathPage() {
           </Stack>
           <Box pt="lg" style={{ display: "flex", justifyContent: "center" }}>
             <Button
+              size="md"
               w={{ base: "100%", xs: 260 }}
               rightSection={<ArrowRight size={14} />}
               onClick={() => router.push("/courses")}

@@ -58,7 +58,7 @@ export default function FooterSection() {
           component="a"
           href="#top"
           radius="md"
-          className="h-[70px] w-[229px] bg-white text-xl font-medium tracking-[-0.025em] text-[#333] hover:bg-[#f5f7f5]"
+          className="h-[70px] w-[229px] bg-white! text-xl font-medium tracking-[-0.025em] text-[#333]! hover:bg-[#f5f7f5]"
         >
           Get Started
         </Button>
@@ -102,7 +102,7 @@ export default function FooterSection() {
                 <Button
                   type="submit"
                   radius="sm"
-                  className="h-12 w-40 bg-[#829093] text-base font-medium text-[#f5f5f5] hover:bg-[#6f7c7f]"
+                  className="h-12 w-40 bg-[#829093]! text-base font-medium text-[#f5f5f5]! hover:bg-[#6f7c7f]!"
                 >
                   {submitted ? "Subscribed" : "Subscribe"}
                 </Button>
@@ -138,7 +138,7 @@ export default function FooterSection() {
             />
 
             <div className="flex flex-col items-start justify-between gap-4 text-xs text-[#595959] sm:flex-row sm:items-center">
-              <p>© 2026 Cunnive. All rights reserved.</p>
+              <p>© 2026 Cuniv. All rights reserved.</p>
 
               <div className="flex gap-4 ">
                 <a

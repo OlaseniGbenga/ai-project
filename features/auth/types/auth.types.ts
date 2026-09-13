@@ -9,16 +9,17 @@ interface BasePasswordValues {
   confirmPassword: string;
 }
 
-export interface RegisterFormValues
-  extends BaseEmailValues, BasePasswordValues {}
+export type RegisterStepOneValues = BaseEmailValues & BasePasswordValues;
+
+export type RegisterFormValues = RegisterStepOneValues;
 
 export interface LoginFormValues extends BaseEmailValues {
   password: string;
 }
 
-export interface ForgotPasswordFormValues extends BaseEmailValues {}
+export type ForgotPasswordFormValues = BaseEmailValues;
 
-export interface ResetPasswordFormValues extends BasePasswordValues {}
+export type ResetPasswordFormValues = BasePasswordValues;
 
 export interface VerifyOtpPayload extends BaseEmailValues {
   otp: string;

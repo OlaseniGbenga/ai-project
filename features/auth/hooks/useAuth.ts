@@ -10,7 +10,7 @@ import {
   updateUserProfile,
 } from "@/features/auth/services/auth.service";
 import {
-  RegisterFormValues,
+  RegisterStepOneValues,
   LoginFormValues,
   VerifyOtpPayload,
   verifyOtpForgotPasswordPayload,
@@ -24,7 +24,7 @@ const ONBOARDING_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 export const useRegister = () => {
   return useMutation({
-    mutationFn: (payload: RegisterFormValues) => registerUser(payload),
+    mutationFn: (payload: RegisterStepOneValues) => registerUser(payload),
   });
 };
 

@@ -17,7 +17,7 @@ const courses = [
     image: "plumber.png",
   },
   {
-    title: "Fashion Designers",
+    title: "Mechanics",
     description:
       "Discover AI for customer service, marketing, organisation, problem-solving, and business planning.",
     image: "mechanic.png",
@@ -69,7 +69,17 @@ export default function CoursesSection() {
             </p>
           </div>
         </div>
-
+        <div className="flex justify-center md:justify-end  w-full sm:px-10 lg:px-20 mt-0 lg:mt-8 ">
+          <Button
+            component="a"
+            href="#"
+            variant="white"
+            radius="md"
+            className="h-12 w-40 text-base font-medium text-[#43ac47]"
+          >
+            Explore Courses
+          </Button>
+        </div>
         <div className="w-full">
           <RulePattern />
           <div className="relative px-0 py-12 sm:px-8 sm:py-14 lg:px-[72px]">
@@ -119,17 +129,6 @@ export default function CoursesSection() {
                 </article>
               ))}
             </div>
-          </div>
-          <div className="flex justify-end">
-            <Button
-              component="a"
-              href="#"
-              variant="white"
-              radius="md"
-              className="h-12 w-40 text-base font-medium text-[#43ac47]"
-            >
-              Explore Courses
-            </Button>
           </div>
         </div>
 

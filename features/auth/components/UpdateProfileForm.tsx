@@ -18,7 +18,7 @@ export default function UpdateProfileForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  // Derive prefill from cache — only used as initial display before user edits
+  // Display name logic
   const displayFirst = firstName || data?.data.firstName || "";
   const displayLast = lastName || data?.data.lastName || "";
 
