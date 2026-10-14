@@ -1,55 +1,122 @@
 "use client";
-// import { useDisclosure } from "@mantine/hooks";
-import { AppShell } from "@mantine/core";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { usePathname } from "next/navigation";
-// import { cn } from "@/utils";
-import { useState, type ReactNode } from "react";
-// import { useAuth } from "@/contexts/AuthContext";
-// import { useQuery } from "@tanstack/react-query";
-// import { getMe } from "@/features/auth/services/auth.service";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/utils";
 import ProtectedRoute from "@/components/auth/protected-route";
 import { AuthProvider } from "@/contexts/AuthContext";
 import DashboardSidebar from "@/components/layout/left-sidebar";
 import DashboardTopBar from "@/components/layout/top-bar";
 
-interface AuthLayoutProps {
-  children: ReactNode;
-}
-
-export default function Layout({ children }: AuthLayoutProps) {
+export default function Layout({ children }: { children: ReactNode }) {
   // const [opened, { toggle }] = useDisclosure();
+  const pathname = usePathname();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  // const [displayName, setDisplayName] = useState(getDisplayNameFromStorage);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    setMobileSidebarOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileSidebarOpen) return;
+
+    const navigation = document.getElementById("dashboard-navigation");
+    const getFocusableElements = () =>
+      Array.from(
+        navigation?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      ).filter((element) => element.offsetParent !== null);
+
+    getFocusableElements()[0]?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMobileSidebarOpen(false);
+        document.getElementById("dashboard-menu-toggle")?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const focusableElements = getFocusableElements();
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements.at(-1);
+
+      if (!firstElement || !lastElement) return;
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [mobileSidebarOpen]);
 
   // Fetch fresh profile on every login session and sync to localStorage
 
   return (
     <AuthProvider>
       <ProtectedRoute>
-        <AppShell
-          header={{ height: 0 }}
-          navbar={{
-            width: sidebarCollapsed ? 92 : 320,
-            breakpoint: "",
-          }}
-          padding="md"
-        >
-          <AppShell.Navbar className="border-0 bg-[#fdfdfd]">
+        <div className="flex min-h-screen bg-white">
+          {/* Backdrop for mobile */}
+          {mobileSidebarOpen && (
+            <button
+              type="button"
+              aria-label="Close navigation menu"
+              onClick={() => setMobileSidebarOpen(false)}
+              className="fixed inset-0 z-[100] bg-black/40 lg:hidden"
+            />
+          )}
+
+          {/* Sidebar */}
+          <aside
+            id="dashboard-navigation"
+            role={mobileSidebarOpen ? "dialog" : undefined}
+            aria-modal={mobileSidebarOpen ? true : undefined}
+            aria-label="Dashboard navigation"
+            className={cn(
+              "fixed inset-y-0 left-0 z-[110] flex flex-col border-r border-[#ececec] bg-[#fdfdfd] shadow-sm transition-transform duration-300",
+              sidebarCollapsed ? "w-[92px]" : "w-[272px]",
+              // Mobile: hidden by default, slide in when open
+              mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
+              // Desktop: always visible
+              "lg:translate-x-0",
+            )}
+          >
             <DashboardSidebar
               collapsed={sidebarCollapsed}
-              onToggleCollapse={() => setSidebarCollapsed((value) => !value)}
+              onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+              onClose={() => setMobileSidebarOpen(false)}
             />
-          </AppShell.Navbar>
+          </aside>
 
-          <AppShell.Main>
-            <div>
-              <DashboardTopBar className="mb-2" />
+          {/* Main area */}
+          <div
+            className={cn(
+              "flex min-h-screen w-full flex-col transition-all duration-300",
+              sidebarCollapsed ? "lg:pl-[92px]" : "lg:pl-[272px]",
+            )}
+          >
+            <DashboardTopBar
+              mobileSidebarOpen={mobileSidebarOpen}
+              sidebarCollapsed={sidebarCollapsed}
+              onMenuClick={() => setMobileSidebarOpen((v) => !v)}
+            />
+            <main className="flex-1 pt-16 px-4 sm:px-6 lg:px-8 py-6">
               {children}
-            </div>
-          </AppShell.Main>
-        </AppShell>
+            </main>
+          </div>
+        </div>
       </ProtectedRoute>
     </AuthProvider>
   );

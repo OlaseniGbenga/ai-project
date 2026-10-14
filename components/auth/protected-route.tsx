@@ -11,17 +11,17 @@ type ProtectedRouteProps = {
 export default function ProtectedRoute({
   children,
 }: ProtectedRouteProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!loading && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, loading, router]);
 
-  if (!isAuthenticated) {
-    return null; 
+  if (loading || !isAuthenticated) {
+    return null;
   }
 
   return <>{children}</>;

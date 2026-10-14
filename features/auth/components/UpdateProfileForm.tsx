@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { Check, Mail, Pencil, UserRound } from "lucide-react";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
 import { useUpdateProfile } from "@/features/auth/hooks/useAuth";
@@ -48,62 +48,38 @@ export default function UpdateProfileForm() {
     );
   };
 
+  const fullName = `${displayFirst} ${displayLast}`.trim() || "Your name";
+  const initials = `${displayFirst.charAt(0)}${displayLast.charAt(0)}`.toUpperCase() || "U";
+
   return (
-    <div className="flex flex-col">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex min-h-10 cursor-pointer items-center justify-between rounded-[8px] bg-[#e7e7e7] px-3 text-sm font-semibold text-neutral-900 transition-colors hover:bg-[#dddddd] focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
-      >
-        <span>Update Profile</span>
-        <ChevronRight
-          aria-hidden="true"
-          strokeWidth={2}
-          className={`h-5 w-5 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
-        />
-      </button>
+    <div className="rounded-[14px] border border-[#edf0ed] bg-white p-5 shadow-[0_8px_24px_rgba(31,72,38,0.05)] sm:p-6">
+      <div className="mb-7 flex items-start justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#f96eae] text-lg font-semibold text-white shadow-sm">{initials}</div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-lg font-semibold text-[#1a1a1a]">{fullName}</h3>
+              <span className="flex items-center gap-1 rounded-full bg-[#ecf8ee] px-2 py-1 text-[10px] font-semibold text-[#43ac47]"><Check size={12} /> Active</span>
+            </div>
+            <p className="mt-1 text-sm text-[#909090]">Personal account</p>
+          </div>
+        </div>
+        <button type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} className="flex items-center gap-1.5 rounded-[8px] border border-[#e5e5e5] px-3 py-2 text-xs font-semibold text-[#52666d] transition-colors hover:border-[#066f33] hover:text-[#066f33] focus:outline-none focus:ring-2 focus:ring-[#066f33] focus:ring-offset-2"><Pencil size={14} /> {open ? "Close" : "Edit"}</button>
+      </div>
+
+      <div className="mb-5 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-[10px] bg-[#f8faf8] p-3"><div className="mb-2 flex items-center gap-2 text-xs font-medium text-[#909090]"><UserRound size={15} /> Full name</div><p className="text-sm font-semibold text-[#1a1a1a]">{fullName}</p></div>
+        <div className="rounded-[10px] bg-[#f8faf8] p-3"><div className="mb-2 flex items-center gap-2 text-xs font-medium text-[#909090]"><Mail size={15} /> Email address</div><p className="truncate text-sm font-semibold text-[#1a1a1a]">{data?.data.email || "Not available"}</p></div>
+      </div>
 
       {open && (
-        <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-3 px-1">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="firstName" className="text-xs font-medium text-neutral-600">
-              First Name
-            </label>
-            <input
-              id="firstName"
-              type="text"
-              value={displayFirst}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
-              disabled={isLoading}
-              className="rounded-[8px] border border-neutral-300 bg-[#f3f2f2] px-3 py-2 text-sm text-neutral-900 outline-none focus:border-primary-700 focus:ring-1 focus:ring-primary-700 disabled:opacity-50"
-              placeholder="First name"
-            />
+        <form onSubmit={handleSubmit} className="border-t border-[#eeeeee] pt-5">
+          <p className="mb-4 text-sm font-semibold text-[#1a1a1a]">Edit personal details</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-[#52666d]" htmlFor="firstName">First name<input id="firstName" type="text" value={displayFirst} onChange={(e) => setFirstName(e.target.value)} required disabled={isLoading} className="h-11 rounded-[9px] border border-[#e3e8e3] bg-[#fbfcfb] px-3 text-sm text-[#1a1a1a] outline-none transition-colors focus:border-[#066f33] focus:ring-2 focus:ring-[#066f33]/10 disabled:opacity-50" placeholder="First name" /></label>
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-[#52666d]" htmlFor="lastName">Last name<input id="lastName" type="text" value={displayLast} onChange={(e) => setLastName(e.target.value)} required disabled={isLoading} className="h-11 rounded-[9px] border border-[#e3e8e3] bg-[#fbfcfb] px-3 text-sm text-[#1a1a1a] outline-none transition-colors focus:border-[#066f33] focus:ring-2 focus:ring-[#066f33]/10 disabled:opacity-50" placeholder="Last name" /></label>
           </div>
-
-          <div className="flex flex-col gap-1">
-            <label htmlFor="lastName" className="text-xs font-medium text-neutral-600">
-              Last Name
-            </label>
-            <input
-              id="lastName"
-              type="text"
-              value={displayLast}
-              onChange={(e) => setLastName(e.target.value)}
-              required
-              disabled={isLoading}
-              className="rounded-[8px] border border-neutral-300 bg-[#f3f2f2] px-3 py-2 text-sm text-neutral-900 outline-none focus:border-primary-700 focus:ring-1 focus:ring-primary-700 disabled:opacity-50"
-              placeholder="Last name"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isPending || isLoading}
-            className="min-h-9 cursor-pointer rounded-[8px] bg-primary-700 px-4 text-sm font-bold text-white transition-colors hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 disabled:opacity-60"
-          >
-            {isPending ? "Saving…" : "Save Changes"}
-          </button>
+          <button type="submit" disabled={isPending || isLoading} className="mt-5 rounded-[9px] bg-[#066f33] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#055b2a] focus:outline-none focus:ring-2 focus:ring-[#066f33] focus:ring-offset-2 disabled:opacity-60">{isPending ? "Saving…" : "Save changes"}</button>
         </form>
       )}
     </div>

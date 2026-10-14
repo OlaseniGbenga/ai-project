@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ActionIcon, Badge, Divider, Text } from "@mantine/core";
@@ -11,6 +11,7 @@ import {
   BookOpen,
   ChevronDown,
   ChevronsLeft,
+  X,
   CircleHelp,
   Grid2x2,
   LogOut,
@@ -18,6 +19,8 @@ import {
   UserRoundPen,
 } from "lucide-react";
 import { cn } from "@/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { getMe } from "@/features/auth/services/auth.service";
 
 type SidebarItem = {
   label: string;
@@ -55,19 +58,25 @@ const mainMenuItems: SidebarItem[] = [
 ];
 
 const accountItems: SidebarItem[] = [
+  // {
+  //   label: "Profile",
+  //   href: "/profile",
+  //   icon: <UserRoundPen size={20} strokeWidth={1.8} />,
+  //   isActive: (pathname) =>
+  //     pathname === "/profile" || pathname.startsWith("/profile"),
+  // },
+  // {
+  //   label: "Notifications",
+  //   href: "/notifications",
+  //   icon: <Bell size={20} strokeWidth={1.8} />,
+  //   isActive: (pathname) =>
+  //     pathname === "/notifications" || pathname.startsWith("/notifications"),
+  // },
   {
-    label: "Profile",
-    href: "/profile",
-    icon: <UserRoundPen size={20} strokeWidth={1.8} />,
-    isActive: (pathname) =>
-      pathname === "/profile" || pathname.startsWith("/profile"),
-  },
-  {
-    label: "Notifications",
-    href: "/notifications",
-    icon: <Bell size={20} strokeWidth={1.8} />,
-    isActive: (pathname) =>
-      pathname === "/notifications" || pathname.startsWith("/notifications"),
+    label: "Settings",
+    href: "/settings",
+    icon: <Settings size={20} strokeWidth={1.8} />,
+    isActive: (pathname) => pathname.startsWith("/settings"),
   },
   {
     label: "Log Out",
@@ -84,7 +93,7 @@ function SidebarSectionHeader({ children }: { children: ReactNode }) {
       size="xs"
       fw={500}
       tt="uppercase"
-      c="#909090"
+      c="#595959"
       className="tracking-[0.12em]"
     >
       {children}
@@ -95,10 +104,14 @@ function SidebarSectionHeader({ children }: { children: ReactNode }) {
 function SidebarNavItem({
   item,
   active,
+  onNavigate,
 }: {
   item: SidebarItem;
   active: boolean;
+  onNavigate?: () => void;
 }) {
+  const { logout } = useAuth();
+
   const content = (
     <>
       <span
@@ -115,7 +128,7 @@ function SidebarNavItem({
         fw={active ? 500 : 400}
         className={cn(
           "leading-[1.4] whitespace-nowrap text-[16px]",
-          active ? "text-[#082a35]" : "text-[#52666d]",
+          active ? "text-[#082a35]" : "text-[#3f535a]",
         )}
       >
         {item.label}
@@ -132,6 +145,10 @@ function SidebarNavItem({
           active && "bg-[#dfece8]",
         )}
         aria-label="Log out"
+        onClick={() => {
+          onNavigate?.();
+          logout();
+        }}
       >
         {content}
       </button>
@@ -142,6 +159,7 @@ function SidebarNavItem({
     <Link
       href={item.href}
       aria-current={active ? "page" : undefined}
+      onClick={onNavigate}
       className={cn(
         "flex w-full items-center gap-[10px] rounded-[10px] p-[12px] transition-colors duration-200 hover:bg-[#f3f4f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#066f33] focus-visible:ring-offset-2",
         active && "bg-[#dfece8]",
@@ -156,12 +174,29 @@ export function DashboardSidebar({
   className,
   collapsed = false,
   onToggleCollapse,
+  onClose,
 }: {
   className?: string;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+  onClose?: () => void;
 }) {
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
+  const [displayName, setDisplayName] = useState("");
+  const [initials, setInitials] = useState("");
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    getMe()
+      .then(({ data }) => {
+        const first = data.firstName ?? "";
+        const last = data.lastName ?? "";
+        setDisplayName(`${first} ${last}`.trim());
+        setInitials(`${first.charAt(0)}${last.charAt(0)}`.toUpperCase());
+      })
+      .catch(() => {});
+  }, [isAuthenticated]);
 
   if (collapsed) {
     return (
@@ -243,16 +278,9 @@ export function DashboardSidebar({
         </div>
 
         <div className="mt-auto flex w-full flex-col items-center gap-3 pb-2">
-          <Link
-            href="/settings"
-            aria-label="Open settings"
-            className="flex h-11 w-11 items-center justify-center rounded-[10px] text-[#757575] transition-colors hover:bg-[#f3f4f5] hover:text-[#1a1a1a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#066f33] focus-visible:ring-offset-2"
-          >
-            <Settings size={20} strokeWidth={1.8} />
-          </Link>
           <Divider my="md" color="#e7e7e7" w={60} />
           <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[#f96eae] text-[12.98px] font-semibold text-[#f9fafb]">
-            AM
+            {initials}
           </div>
         </div>
       </aside>
@@ -267,25 +295,36 @@ export function DashboardSidebar({
       )}
       aria-label="Dashboard navigation sidebar"
     >
-      <div className="flex w-full items-center justify-between">
-        {/* <Image
-          src="/logo.svg"
-          alt="Segsalerty logo"
-          width={171}
-          height={28}
-          priority
-        /> */}
+      {/* Mobile header: logo + close button */}
+      <div className="flex w-full items-center justify-between pr-4 lg:hidden">
+        <span className="pl-1 text-[15px] font-bold tracking-tight text-[#082a35]">
+          CUNIV-AI
+        </span>
         <ActionIcon
           variant="subtle"
-          color="gray"
           radius="sm"
-          size={32}
+          size={36}
+          aria-label="Close navigation menu"
+          onClick={onClose}
+          className="text-[#52666d] hover:bg-[#f3f4f5] hover:text-[#1a1a1a]"
+        >
+          <X size={18} strokeWidth={2} aria-hidden="true" />
+        </ActionIcon>
+      </div>
+
+      {/* Desktop header: logo + collapse button */}
+      <div className="hidden w-full items-center justify-between pr-4 lg:flex">
+        <span className="pl-1 text-[15px] font-bold tracking-tight text-[#082a35]">
+          CUNIV-AI
+        </span>
+        <button
+          type="button"
           aria-label="Collapse sidebar"
           onClick={onToggleCollapse}
-          className="bg-[#f4f4f4] text-[#1a1a1a] hover:bg-[#ececec] ml-[210px]"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-[#52666d] transition-colors hover:bg-[#f3f4f5] hover:text-[#082a35]"
         >
-          <ChevronsLeft size={20} strokeWidth={1.8} />
-        </ActionIcon>
+          <ChevronsLeft size={16} strokeWidth={2} />
+        </button>
       </div>
 
       <Divider my={"20px"} color="#e7e7e7" />
@@ -296,7 +335,12 @@ export function DashboardSidebar({
           {mainMenuItems.map((item) => {
             const active = item.isActive ? item.isActive(pathname) : false;
             return (
-              <SidebarNavItem key={item.label} item={item} active={active} />
+              <SidebarNavItem
+                key={item.label}
+                item={item}
+                active={active}
+                onNavigate={onClose}
+              />
             );
           })}
         </div>
@@ -308,40 +352,23 @@ export function DashboardSidebar({
           {accountItems.map((item) => {
             const active = item.isActive ? item.isActive(pathname) : false;
             return (
-              <SidebarNavItem key={item.label} item={item} active={active} />
+              <SidebarNavItem
+                key={item.label}
+                item={item}
+                active={active}
+                onNavigate={onClose}
+              />
             );
           })}
         </div>
       </nav>
-
-      <div className="mt-auto pb-2">
-        <Link
-          href="/settings"
-          className={cn(
-            "flex w-full items-center gap-[10px] rounded-[10px] p-[12px] transition-colors duration-200 hover:bg-[#f3f4f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#066f33] focus-visible:ring-offset-2",
-          )}
-          aria-label="Open settings"
-        >
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[#757575]">
-            <Settings size={20} strokeWidth={1.8} />
-          </span>
-          <Text
-            component="span"
-            size="sm"
-            c="#757575"
-            className="leading-[1.4] whitespace-nowrap text-[16px]"
-          >
-            Settings
-          </Text>
-        </Link>
-      </div>
 
       <Divider my="sm" color="#e7e7e7" />
 
       <div className="flex w-full items-center justify-between rounded-[10px] bg-[#fdfdfd] px-1 py-2">
         <div className="flex items-center gap-2.5">
           <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[#f96eae] text-[12.98px] font-semibold text-[#f9fafb]">
-            AM
+            {initials}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -353,7 +380,7 @@ export function DashboardSidebar({
                 c="#1a1a1a"
                 className="tracking-[-0.2px]"
               >
-                Aniebiet Moses
+                {displayName}
               </Text>
 
               <Badge
@@ -368,7 +395,8 @@ export function DashboardSidebar({
             </div>
             <Link
               href="/settings"
-              className="text-[13px] text-[#757575] transition-colors hover:text-[#1a1a1a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#066f33] focus-visible:ring-offset-2"
+              onClick={onClose}
+              className="text-[13px] text-[#595959] transition-colors hover:text-[#1a1a1a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#066f33] focus-visible:ring-offset-2"
             >
               Upgrade
             </Link>

@@ -49,7 +49,7 @@ export default function LoginPage() {
         });
 
         if (data.data.user.isOnboardingComplete) {
-          router.replace("/courses");
+          router.replace("/dashboard");
         } else {
           router.replace("/onboarding/about-work");
         }

@@ -43,13 +43,13 @@ const ACTIVITY_EVENTS = [
 ] as const;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => {
-    if (typeof window === "undefined") {
-      return null;
-    }
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    return localStorage.getItem("accessToken");
-  });
+  useEffect(() => {
+    setToken(localStorage.getItem("accessToken"));
+    setLoading(false);
+  }, []);
 
   const router = useRouter();
   const timeoutRef = useRef<number | null>(null);
@@ -218,7 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         token,
-        loading: false,
+        loading,
         isAuthenticated: !!token,
         login,
         logout,

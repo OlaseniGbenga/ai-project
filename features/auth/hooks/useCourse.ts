@@ -1,3 +1,4 @@
+
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   getLearningPath,
@@ -9,6 +10,7 @@ import {
   postQuizs,
   getPracTask,
   postPracTask,
+  getCourseModules,
 } from "@/features/auth/services/courses.service";
 
 export const useGetLearningPath = () => {
@@ -24,10 +26,7 @@ export const useGetLearningPathStatus = () => {
     queryFn: getLearningPathStatus,
     refetchInterval: (query) => {
       const status = query.state.data?.data.isReady;
-
-      return status
-        ? false // Poll every 30 seconds
-        : 30 * 1000; // Stop polling
+      return status ? false : 30 * 1000;
     },
   });
 };
@@ -48,6 +47,14 @@ export const useGetLessons = (courseID: string) => {
   });
 };
 
+export const useGetCourseModules = (courseId: string) => {
+  return useQuery({
+    queryKey: ["course-modules", courseId],
+    queryFn: () => getCourseModules(courseId),
+    enabled: Boolean(courseId),
+  });
+};
+
 export const usePostCompletedLesson = (id: string) => {
   return useMutation({
     mutationFn: () => postCompletedLesson(id),
@@ -58,6 +65,7 @@ export const useGetQuizs = (lessonID: string) => {
   return useQuery({
     queryKey: ["lessons-Quiz", lessonID],
     queryFn: () => getQuizs(lessonID),
+    enabled: Boolean(lessonID),
   });
 };
 
@@ -65,6 +73,7 @@ export const useGetPracTask = (lessonID: string) => {
   return useQuery({
     queryKey: ["PracTask", lessonID],
     queryFn: () => getPracTask(lessonID),
+    enabled: Boolean(lessonID),
   });
 };
 

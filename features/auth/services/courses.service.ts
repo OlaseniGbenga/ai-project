@@ -9,7 +9,8 @@ import {
   singleLessonResponse,
   QuizResponse,
   PracTaskResponse,
-  PostPracTaskResponse
+  PostPracTaskResponse,
+  CourseModulesResponse
 } from "@/features/auth/types/courses.type";
 
 export const getLearningPath = async (): Promise<LearningPathResponse> => {
@@ -96,5 +97,14 @@ export const postPracTask = async (
   const response = await axiosInstance.post<PostPracTaskResponse>(
     `practical-tasks/${taskID}/complete`,
   );
+  return response.data;
+};
+
+
+export const getCourseModules = async (courseId: string) => {
+  const response = await axiosInstance.get<CourseModulesResponse>(
+    `/courses/${courseId}/modules`
+  );
+
   return response.data;
 };

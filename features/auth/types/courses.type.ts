@@ -1,3 +1,4 @@
+
 export interface QuizOption {
   id: string;
   optionText: string;
@@ -41,6 +42,27 @@ export interface Profile {
   learnerLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 }
 
+export type LessonStatus =
+  | "NOT_STARTED"
+  | "UP_NEXT"
+  | "LOCKED"
+  | "COMPLETED"
+  | "IN_PROGRESS";
+
+export interface Lesson {
+  id: string;
+  courseId: string;
+  moduleId?: string;
+  title: string;
+  orderNumber: number;
+  durationMinutes: number;
+  content: string;
+  isLocked: boolean;
+  status: LessonStatus;
+  flashcards: FlashCard[];
+  quiz?: Quiz;
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -50,19 +72,6 @@ export interface Course {
   completedModules: number;
   totalModules: number;
   lessons: Lesson[];
-}
-
-export interface Lesson {
-  id: string;
-  courseId: string;
-  title: string;
-  orderNumber: number;
-  durationMinutes: number;
-  content: string;
-  isLocked: boolean;
-  status: "UP_NEXT" | "LOCKED" | "COMPLETED" | "IN_PROGRESS";
-  flashcards: FlashCard[];
-  quiz?: Quiz;
 }
 
 export interface NewLesson {
@@ -77,9 +86,9 @@ export interface NewLesson {
   completedLessons: number;
   totalLessons: number;
   lessons: Lesson[];
-  isQuizAvailable: true;
-  isAssignmentAvailable: true;
-  lastAccessedLessonId: null;
+  isQuizAvailable: boolean;
+  isAssignmentAvailable: boolean;
+  lastAccessedLessonId: string | null;
 }
 
 export interface LearningPath {
@@ -111,26 +120,10 @@ export interface PracTask {
   recommendedTools: string[];
   isUnlocked: boolean;
   status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
-  completedAt: string | null; // ISO date string when completed
+  completedAt: string | null;
 }
 
-// export interface PostPracTask {
-//   task: {
-//     id: string;
-//     courseId: string;
-//     lessonId: string;
-//     status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
-//     completedAt: string | null;
-//   };
-//   alreadyCompleted: boolean;
-//   courseProgress: {
-//     totalTasks: number;
-//     completedTasks: number;
-//     allTasksCompleted: boolean;
-//   };
-// }
-
- export interface PostPracTask {
+export interface PostPracTask {
   nextLessonId: string;
   task: {
     id: string;
@@ -152,6 +145,24 @@ export interface ApiResponse<T = unknown> {
   timestamp: string;
 }
 
+export interface CourseModuleLesson {
+  id: string;
+  title: string;
+  orderNumber: number;
+  durationMinutes: number;
+  status: LessonStatus;
+}
+
+export interface CourseModule {
+  id: string;
+  title: string;
+  description: string | null;
+  orderNumber: number;
+  lessons: CourseModuleLesson[];
+}
+
+export type CourseModulesResponse = ApiResponse<CourseModule[]>;
+
 export interface CourseLessonsResponse {
   data: Lesson[];
   timestamp: string;
@@ -159,15 +170,22 @@ export interface CourseLessonsResponse {
 
 export type LearningPathResponse = ApiResponse<LearningPath>;
 
-export type LearningPathStatusResponse = ApiResponse<LearningPathStatus>;
+export type LearningPathStatusResponse =
+  ApiResponse<LearningPathStatus>;
+
 export type CourseLessonResponse = ApiResponse<NewLesson>;
 
 export type CourseContent = ApiResponse<Lesson[]>;
+
 export type singleLessonResponse = ApiResponse<Lesson>;
+
 export type QuizPost = ApiResponse<Quiz[]>;
+
 export type QuizResponse = ApiResponse<{
   scorePercent: number;
   isPassed: boolean;
 }>;
+
 export type PracTaskResponse = ApiResponse<PracTask>;
+
 export type PostPracTaskResponse = ApiResponse<PostPracTask>;

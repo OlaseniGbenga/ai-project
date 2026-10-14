@@ -1,9 +1,10 @@
 "use client";
 
 import { ActionIcon, Text, TextInput } from "@mantine/core";
-import { Bell, Search } from "lucide-react";
+import { Bell, Menu, Search, X } from "lucide-react";
 import { cn } from "@/utils";
 import { usePathname } from "next/navigation";
+import { useRef } from "react";
 
 interface DashboardTopBarProps {
   title?: string;
@@ -12,42 +13,72 @@ interface DashboardTopBarProps {
   value?: string;
   onChange?: (value: string) => void;
   onNotificationClick?: () => void;
+  mobileSidebarOpen?: boolean;
+  onMenuClick?: () => void;
+  sidebarCollapsed?: boolean;
 }
 
 export function DashboardTopBar({
   title = "Dashboard",
-  searchPlaceholder = "Search by Name or company",
+  searchPlaceholder = "",
   className,
   value,
   onChange,
   onNotificationClick,
+  mobileSidebarOpen = false,
+  onMenuClick,
+  sidebarCollapsed = false,
 }: DashboardTopBarProps) {
-
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
-  const segment = pathname.split("/").filter(Boolean)[0].charAt(0).toUpperCase() + pathname.split("/").filter(Boolean)[0].slice(1);
-
-
+  const routeSegment = pathname.split("/").filter(Boolean)[0] ?? "";
+  const heading = routeSegment
+    ? routeSegment.charAt(0).toUpperCase() + routeSegment.slice(1)
+    : title;
 
   return (
     <header
       className={cn(
-        "flex w-full items-center justify-between border-b border-[#ececec] bg-white px-4 py-2 sm:px-6 lg:px-8",
+        "fixed top-0 right-0 z-50 flex min-h-16 w-full items-center justify-between gap-3 border-b border-[#ececec] bg-white px-3 py-2 sm:px-6 lg:px-8",
+        sidebarCollapsed ? "lg:left-[92px]" : "lg:left-[272px]",
         className,
       )}
       aria-label="Dashboard top bar"
     >
-      <Text
-        component="h1"
-        size="lg"
-        fw={400}
-        c="#1a1a1a"
-        className="tracking-[-0.32px]"
-      >
-        {segment}
-      </Text>
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="shrink-0 lg:hidden">
+          <ActionIcon
+            variant="subtle"
+            aria-label={mobileSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileSidebarOpen}
+            id="dashboard-menu-toggle"
+            aria-controls="dashboard-navigation"
+            ref={menuButtonRef}
+            onClick={onMenuClick}
+            size={44}
+            radius="10px"
+            className="border border-[#e5e7eb] bg-white text-[#1a1a1a] hover:bg-[#f3f4f5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#066f33] focus-visible:ring-offset-2"
+          >
+            {mobileSidebarOpen ? (
+              <X size={22} strokeWidth={2} aria-hidden="true" />
+            ) : (
+              <Menu size={22} strokeWidth={2} aria-hidden="true" />
+            )}
+          </ActionIcon>
+        </div>
+        <Text
+          component="h1"
+          size="lg"
+          fw={600}
+          c="#1a1a1a"
+          className="truncate tracking-[-0.32px]"
+        >
+          {heading}
+        </Text>
+      </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-4">
         <TextInput
           value={value}
           onChange={(event) => onChange?.(event.currentTarget.value)}
@@ -83,9 +114,9 @@ export function DashboardTopBar({
             },
           }}
           classNames={{
-            root: "w-[298px] max-w-full",
+            root: "hidden w-[298px] max-w-full min-[48em]:block",
             input:
-              "placeholder:text-[#757575] focus:border-[#066f33] focus:ring-2 focus:ring-[#066f33]/10",
+              "placeholder:text-[#595959] focus:border-[#066f33] focus:ring-2 focus:ring-[#066f33]/20 focus-visible:outline-none",
           }}
         />
 
@@ -95,7 +126,7 @@ export function DashboardTopBar({
           onClick={onNotificationClick}
           size={48}
           radius="10px"
-          className="border border-[#f4f4f4] bg-white text-[#1a1a1a] transition-colors hover:bg-[#f6f6f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#066f33] focus-visible:ring-offset-2"
+          className="border border-[#e5e7eb] bg-white text-[#1a1a1a] transition-colors hover:bg-[#f6f6f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#066f33] focus-visible:ring-offset-2"
         >
           <Bell size={24} strokeWidth={1.8} />
         </ActionIcon>
