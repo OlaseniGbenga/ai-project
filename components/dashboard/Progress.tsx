@@ -101,7 +101,7 @@ function Progress({
         className="overflow-hidden rounded-[12px] bg-[#0c404e] px-[30px] py-[30px] shadow-[0_4px_16px_0_rgba(15,23,42,0.06)]"
       >
         <div className="relative min-h-[130px] rounded">
-          <Stack gap={24} className="relative z-10 max-w-[290px] pt-[6px]">
+          <Stack gap={24} align="flex-start" className="relative z-10 max-w-[290px] pt-[6px]">
             <Text
               c="#f5f7f5"
               fz={24}
@@ -115,19 +115,39 @@ function Progress({
               Your Certificates
             </Text>
 
-            <Text
-              c="#c5d3d2"
-              fz={16}
-              lh={1.5}
-              style={{
-                letterSpacing: "-0.32px",
-                fontFamily: '"Inter", sans-serif',
-              }}
-            >
-              {latestCertificate
-                ? `${latestCertificate.title} Completed ${latestCertificate.completedAt}`
-                : "Complete your first course to unlock a certificate."}
-            </Text>
+            {latestCertificate ? (
+              <div className="flex flex-col gap-1">
+                <Text
+                  c="#f5f7f5"
+                  fz={15}
+                  fw={600}
+                  lh={1.4}
+                  style={{ fontFamily: '"Inter", sans-serif' }}
+                >
+                  {latestCertificate.title}
+                </Text>
+                <Text
+                  c="#c5d3d2"
+                  fz={13}
+                  lh={1.5}
+                  style={{ fontFamily: '"Inter", sans-serif' }}
+                >
+                  Completed {latestCertificate.completedAt}
+                </Text>
+              </div>
+            ) : (
+              <Text
+                c="#c5d3d2"
+                fz={16}
+                lh={1.5}
+                style={{
+                  letterSpacing: "-0.32px",
+                  fontFamily: '"Inter", sans-serif',
+                }}
+              >
+                Complete your first course to unlock a certificate.
+              </Text>
+            )}
 
             <Button
               component={Link}
@@ -149,6 +169,7 @@ function Progress({
                   fontFamily: '"Inter", sans-serif',
                   fontWeight: 600,
                   fontSize: "16px",
+                  color:'#43AC47',
                   lineHeight: "24px",
                 },
               }}

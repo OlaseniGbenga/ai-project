@@ -13,6 +13,7 @@ import AskAnything from "@/components/input/AskAnything";
 import Avatar from "@/components/dashboard/Avatar";
 import { useGetLearningPath } from "@/features/auth/hooks/useCourse";
 import { getMe } from "@/features/auth/services/auth.service";
+import { getMyCertificate } from "@/features/certificate/services/certificate.service";
 import type { Course, Lesson } from "@/features/auth/types/courses.type";
 
 const DEFAULT_USER_NAME = "there";
@@ -227,13 +228,27 @@ function Page() {
     error: learningPathError,
   } = useGetLearningPath();
 
+  const { data: certificateData } = useQuery({
+    queryKey: ["certificate-me"],
+    queryFn: getMyCertificate,
+    retry: false,
+  });
+
   const courses = learningPathData?.data.courses ?? [];
   const currentLesson = findCurrentLesson(courses);
   const activeCourse = currentLesson?.course ?? courses[0];
 
-  const isReturningUser = courses.length > 0;
+  const hasStarted = courses.some((course) => (course.progressPercent ?? 0) > 0);
+  const isReturningUser = hasStarted;
   const name = getFirstName(profileData?.data.firstName);
   const stats = getDashboardStats(courses);
+
+  const latestCertificate = certificateData?.data
+    ? {
+        title: courses.find((c) => (c.progressPercent ?? 0) >= 100)?.title ?? certificateData.data.trade,
+        completedAt: new Date(certificateData.data.completionDate).toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+      }
+    : null;
 
   const lessonMeta = currentLesson
     ? getLessonMeta(
@@ -311,7 +326,7 @@ function Page() {
 
         <Progress
           stats={stats}
-          latestCertificate={null}
+          latestCertificate={latestCertificate}
         />
       </div>
 

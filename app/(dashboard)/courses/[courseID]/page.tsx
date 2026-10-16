@@ -1,12 +1,20 @@
-"use client";
-import React, { useState } from "react";
 
-import { Button, Progress, Divider, Skeleton } from "@mantine/core";
-import { getProgressPercentage } from "@/utils";
-import { useRouter } from "next/navigation";
-import { useGetLessons } from "@/features/auth/hooks/useCourse";
-import BackButton from "@/components/ui/btn/back-button";
-import GenerateCertificateBanner from "@/features/certificate/components/GenerateCertificateBanner";
+"use client";
+
+import { use } from "react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Skeleton } from "@mantine/core";
+import FeaturedCourseCard from "@/components/courses/FeaturedCourseCard";
+import WhatYouWillLearn from "@/components/courses/overview/WhatYouWillLearn";
+import AboutCourse from "@/components/courses/overview/AboutCourse";
+import CourseOutline from "@/components/courses/overview/CourseOutline";
+import AskAnything from "@/components/input/AskAnything";
+import {
+  useGetLearningPath,
+  useGetLessons,
+} from "@/features/auth/hooks/useCourse";
+import type { Course } from "@/features/auth/types/courses.type";
 
 interface PageProps {
   params: Promise<{
@@ -14,129 +22,155 @@ interface PageProps {
   }>;
 }
 
-function Page({ params }: PageProps) {
-  const { courseID } = React.use(params);
-  const { data, isLoading, isError, error } = useGetLessons(courseID);
-  const [step, setStep] = useState(6);
-  const courseLessons = data?.data.lessons ?? [];
-  //   const percentage =
-  //     data?.data.course.progressPercent ?? getProgressPercentage(step, 7);
-  //   const totalModules = data?.data.course.totalModules ?? 7;
-  //   const completedModules = data?.data.course.completedModules ?? step;
-  const router = useRouter();
+export default function CourseDetailsPage({ params }: PageProps) {
+  const { courseID } = use(params);
 
-  const getLessonStatusLabel = (status: string) => {
-    switch (status) {
-      case "UP_NEXT":
-        return "Up next";
-      case "IN_PROGRESS":
-        return "In progress";
-      case "COMPLETED":
-        return "Completed";
-      case "LOCKED":
-        return "Locked";
-        case "NOT_STARTED":
-          return "Not started"
-      default:
-        return status;
-    }
-  };
+  const {
+    data: learningPath,
+    isLoading: pathLoading,
+    isError: pathError,
+  } = useGetLearningPath();
 
-  if (isError) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
+  const {
+    data: courseResponse,
+    isLoading: detailsLoading,
+    isError: detailsError,
+  } = useGetLessons(courseID);
+
+  const learningCourse = learningPath?.data.courses.find(
+    (item) => item.id === courseID,
+  );
+
+  const details = courseResponse?.data;
+
+  const course: Course | null = details
+    ? {
+        id: details.id,
+        title: details.title,
+        description: details.description,
+        level:
+          details.level === "INTERMEDIATE" ||
+          details.level === "ADVANCED"
+            ? details.level
+            : "BEGINNER",
+        progressPercent:
+          learningCourse?.progressPercent ??
+          details.progressPercent ??
+          0,
+        completedModules: learningCourse?.completedModules ?? 0,
+        totalModules: learningCourse?.totalModules ?? 0,
+        lessons: details.lessons ?? [],
+      }
+    : learningCourse ?? null;
+
+  const lessons = course?.lessons ?? [];
+
+  const outcomes = lessons
+    .slice(0, 6)
+    .map((lesson) => lesson.title);
+
+  const outlineModules = lessons.map((lesson, index) => ({
+    id: lesson.id,
+    title: `LESSON ${index + 1}`,
+    description: lesson.title,
+    locked: lesson.isLocked || lesson.status === "LOCKED",
+  }));
+
+  const nextLesson =
+    lessons.find((lesson) => lesson.status === "IN_PROGRESS") ??
+    lessons.find((lesson) => lesson.status === "UP_NEXT") ??
+    lessons.find(
+      (lesson) =>
+        !lesson.isLocked && lesson.status !== "COMPLETED",
+    );
+
+  if (pathLoading || detailsLoading) {
     return (
-      <p className="text-red-600">Unable to load course data: {errorMessage}</p>
+      <main className="mx-auto flex w-full max-w-[1050px] flex-col gap-6 pb-10">
+        <Skeleton height={348} radius={12} />
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,673px)_minmax(0,357px)]">
+          <Skeleton height={339} radius={12} />
+          <Skeleton height={280} radius={12} />
+        </div>
+      </main>
+    );
+  }
+
+  if ((pathError && detailsError) || !course) {
+    return (
+      <main className="mx-auto w-full max-w-[1050px]">
+        <Link
+          href="/courses"
+          className="mb-6 inline-flex items-center gap-2 text-[#536B73]"
+        >
+          <ArrowLeft size={18} />
+          Back to Courses
+        </Link>
+        <p role="alert" className="rounded-xl bg-red-50 p-6 text-red-700">
+          Unable to load this course.
+        </p>
+      </main>
     );
   }
 
   return (
-    <div className=" flex flex-col gap-4">
-      <div className="flex  justify-between flex-col sm:flex-row gap-4">
-        <div className="flex flex-col gap-4">
-          <BackButton />
-          <p className="text-primary-700">My Lessons</p>
-          {/* <p className="heading font-black ">Pick up where you left off</p>
-          <p>Built from your goal: Business application</p> */}
+    <main className="mx-auto flex w-full max-w-[1050px] min-w-0 flex-col gap-6 pb-10">
+      <Link
+        href="/courses"
+        className="inline-flex w-fit items-center gap-2 text-[14px] text-[#536B73] hover:text-[#052128]"
+      >
+        <ArrowLeft size={18} />
+        Back to Courses
+      </Link>
+
+      <FeaturedCourseCard course={course} />
+
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,673px)_minmax(0,357px)]">
+        <div className="flex min-w-0 flex-col gap-5">
+          {outcomes.length > 0 && (
+            <WhatYouWillLearn outcomes={outcomes} />
+          )}
+
+          <CourseOutline
+            modules={outlineModules}
+            href={`/courses/${courseID}/outline`}
+          />
         </div>
-        {/* <Button className="btn btn-primary btn-rounded max-w-[200px]">
-          Resume Course
-        </Button> */}
+
+        <div className="flex min-w-0 flex-col gap-5">
+          <AboutCourse description={course.description} />
+
+          <section className="rounded-[12px] border border-[#E5EAE8] bg-white p-6">
+            <h2
+              className="text-[22px] text-[#052128]"
+              style={{ fontFamily: '"GFS Didot", serif' }}
+            >
+              Ready to Learn?
+            </h2>
+
+            <p className="mt-3 text-[14px] leading-6 text-[#536B73]">
+              Explore your course outline and continue your learning
+              journey at your own pace.
+            </p>
+
+            <Link
+              href={
+                nextLesson
+                  ? `/courses/${courseID}/lesson/${nextLesson.id}`
+                  : `/courses/${courseID}/outline`
+              }
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#40AC49] px-4 py-3 text-[14px] font-semibold text-white hover:bg-[#348D3B]"
+            >
+              {nextLesson ? "Start Course" : "View Course Outline"}
+              <ArrowRight size={18} />
+            </Link>
+          </section>
+        </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex flex-col gap-4">
-          <Skeleton h={100} />
-          <Skeleton h={100} />
-        </div>
-      ) : (
-        <div>
-          {" "}
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between">
-              <p>{/* Progress: {percentage}% */}</p>
-              <p>{/* Module: {completedModules}/{totalModules} */}</p>
-            </div>
-
-            {/* <Progress
-              value={percentage}
-              color="var(--color-primary-green)"
-              size="sm"
-              mb="lg"
-              styles={{
-                root: {
-                  backgroundColor: "var(--color-primary-50)",
-                },
-                section: {
-                  backgroundColor: "var(--color-primary-600)",
-                },
-              }}
-            /> */}
-          </div>
-          {data?.data.completedLessons === data?.data.totalLessons &&
-            (data?.data.totalLessons ?? 0) > 0 && (
-              <GenerateCertificateBanner />
-            )}
-
-          <div className="flex flex-col gap-4">
-            {courseLessons.map((item, index) => (
-              <div key={item.id ?? index} className="flex flex-col gap-4">
-                <div className="flex  justify-between flex-col md:flex-row   gap-4 ">
-                  <div className="flex gap-4 items-center flex-row ">
-                    <p className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-700 bg-primary-50  text-primary-700">
-                      {index + 1}
-                    </p>
-                    <div>
-                      <p className="font-bold   "> {item.title}</p>
-                      <div className="flex gap-4 items-center">
-                        <p className="text-gray-500">
-                          {getLessonStatusLabel(item.status)}{" "}
-                        </p>
-                        .
-                        <p className="text-gray-500">
-                          {item.durationMinutes} min
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() =>
-                      router.push(`/courses/${courseID}/lesson/${item.id}`)
-                    }
-                    className="btn-xs btn-primary btn-rounded"
-                    disabled={item.isLocked}
-                  >
-                    Start Lesson
-                  </Button>
-                </div>
-                <Divider />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+      <div className="w-full max-w-[810px]">
+       <AskAnything courseId={courseID} />
+      </div>
+    </main>
   );
 }
-
-export default Page;

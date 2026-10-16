@@ -3,14 +3,14 @@
 import Image from "next/image";
 import { Button } from "@mantine/core";
 import { FormEvent, useState } from "react";
+import { motion } from "framer-motion";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 const assetPath = "/homepage/footer";
 
 const footerLinks = [
-  {
-    title: "Product",
-    links: ["Courses", "AI Assistant", "Dashboard", "How It Works"],
-  },
+  { title: "Product", links: ["Courses", "AI Assistant", "Dashboard", "How It Works"] },
   { title: "Company", links: ["About Us", "Contact Us", "FAQs"] },
   { title: "Legal", links: ["Privacy Policy", "Terms of Service"] },
 ];
@@ -42,7 +42,13 @@ export default function FooterSection() {
         className="pointer-events-none absolute left-1/2 top-[310px] w-[1200px] max-w-none -translate-x-1/2 rotate-[31deg] opacity-70 lg:top-[390px]"
       />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[764px] flex-col items-center gap-10 text-center lg:gap-[42px]">
+      <motion.div
+        className="relative z-10 mx-auto flex w-full max-w-[764px] flex-col items-center gap-10 text-center lg:gap-[42px]"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.8, ease: EASE }}
+      >
         <div className="flex w-full flex-col items-center gap-6">
           <h2 className="font-serif text-[clamp(2.25rem,5vw,3rem)] leading-[1.17] text-[#f5f7f5]">
             Discover how AI can help you work smarter, make better decisions,
@@ -54,17 +60,25 @@ export default function FooterSection() {
             opportunities for your business.
           </p>
         </div>
-        <Button
-          component="a"
-          href="#top"
-          radius="md"
-          className="h-[70px] w-[229px] bg-white! text-xl font-medium tracking-[-0.025em] text-[#333]! hover:bg-[#f5f7f5]"
-        >
-          Get Started
-        </Button>
-      </div>
+        <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+          <Button
+            component="a"
+            href="/login"
+            radius="md"
+            className="h-[70px] w-[229px] bg-white! text-xl font-medium tracking-[-0.025em] text-[#333]! hover:bg-[#f5f7f5]"
+          >
+            Get Started
+          </Button>
+        </motion.div>
+      </motion.div>
 
-      <div className="relative z-10 mx-auto mt-20 flex w-full max-w-[1074px] flex-col rounded-2xl bg-white px-7 py-10 sm:px-10 lg:mt-[300px] lg:px-[55px] lg:py-[70px]">
+      <motion.div
+        className="relative z-10 mx-auto mt-20 flex w-full max-w-[1074px] flex-col rounded-2xl bg-white px-7 py-10 sm:px-10 lg:mt-[300px] lg:px-[55px] lg:py-[70px]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.8, ease: EASE }}
+      >
         <div className="flex flex-col gap-10 lg:gap-[47px]">
           <Image
             src={`${assetPath}/brand-dot.svg`}
@@ -102,9 +116,9 @@ export default function FooterSection() {
                 <Button
                   type="submit"
                   radius="sm"
-                  className="h-12 w-40 bg-[#829093]! text-base font-medium text-[#f5f5f5]! hover:bg-[#6f7c7f]!"
+                  className="h-12 w-40 bg-[#43ac47] text-base font-medium text-[#f5f5f5]! hover:[!"
                 >
-                  {submitted ? "Subscribed" : "Subscribe"}
+                  {submitted ? "Subscribed ✓" : "Subscribe"}
                 </Button>
               </form>
 
@@ -139,19 +153,17 @@ export default function FooterSection() {
 
             <div className="flex flex-col items-start justify-between gap-4 text-xs text-[#595959] sm:flex-row sm:items-center">
               <p>© 2026 Cuniv. All rights reserved.</p>
-
-              <div className="flex gap-4 ">
+              <div className="flex gap-4">
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
                   href="https://www.instagram.com/cuniv.ai?igsh=aDFiOHNkbDZqdnU0&utm_source=qr"
-                  className=""
                 >
                   <Image
                     src={`${assetPath}/instagram.svg`}
-                    alt="Social media links"
-                    width={4}
-                    height={4}
+                    alt="Instagram"
+                    width={16}
+                    height={16}
                     className="h-4 w-4"
                   />
                 </a>
@@ -159,23 +171,20 @@ export default function FooterSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   href="https://web.facebook.com/profile.php?id=61591711206126"
-                  className=""
                 >
                   <Image
                     src={`${assetPath}/twitter.svg`}
-                    alt="Social media links"
-                    width={4}
-                    height={4}
+                    alt="Facebook"
+                    width={16}
+                    height={16}
                     className="h-4 w-4"
                   />
                 </a>
-
-                 
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </footer>
   );
 }

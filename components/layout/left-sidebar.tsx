@@ -49,12 +49,12 @@ const mainMenuItems: SidebarItem[] = [
     icon: <Award size={20} strokeWidth={1.8} />,
     isActive: (pathname) => pathname.startsWith("/certificate"),
   },
-  {
-    label: "Help & Support",
-    href: "/help-support",
-    icon: <CircleHelp size={20} strokeWidth={1.8} />,
-    isActive: (pathname) => pathname.startsWith("/help-support"),
-  },
+  // {
+  //   label: "Help & Support",
+  //   href: "/help-support",
+  //   icon: <CircleHelp size={20} strokeWidth={1.8} />,
+  //   isActive: (pathname) => pathname.startsWith("/help-support"),
+  // },
 ];
 
 const accountItems: SidebarItem[] = [

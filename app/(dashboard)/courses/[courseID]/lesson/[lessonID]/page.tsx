@@ -1,7 +1,9 @@
 
 "use client";
 
-import { use, useMemo } from "react";
+import { use, useMemo, useState } from "react";
+import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Alert, Loader } from "@mantine/core";
 import { BookOpen, Clock3 } from "lucide-react";
@@ -50,6 +52,8 @@ function getStatusLabel(status?: LessonStatus | string) {
 export default function LessonPage({ params }: LessonPageProps) {
   const { courseID, lessonID } = use(params);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [quizError, setQuizError] = useState<string | null>(null);
 
   const {
     data: lessonResponse,
@@ -96,13 +100,49 @@ export default function LessonPage({ params }: LessonPageProps) {
   const status = currentModuleLesson?.status ?? lesson?.status;
 
   const handleStartQuiz = async () => {
-    if (!lesson) return;
+    if (!lesson || completeLesson.isPending) return;
+
+    setQuizError(null);
+
+    if (status === "COMPLETED") {
+      router.push(`/quiz/${lessonID}`);
+      return;
+    }
 
     try {
       await completeLesson.mutateAsync();
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["lesson", lessonID],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["course-modules", courseID],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["lessons", courseID],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["learning-path"],
+        }),
+      ]);
+
       router.push(`/quiz/${lessonID}`);
-    } catch {
-      return;
+    } catch (error: unknown) {
+      const apiMessage = axios.isAxiosError<{
+        message?: string | string[];
+      }>(error)
+        ? error.response?.data?.message
+        : undefined;
+
+      setQuizError(
+        Array.isArray(apiMessage)
+          ? apiMessage.join(". ")
+          : apiMessage ||
+              (error instanceof Error
+                ? error.message
+                : "Unable to complete this lesson. Please try again."),
+      );
     }
   };
 
@@ -119,11 +159,7 @@ export default function LessonPage({ params }: LessonPageProps) {
       <div className="space-y-5">
         <BackButton />
 
-        <Alert
-          color="red"
-          radius="md"
-          title="Unable to load lesson"
-        >
+        <Alert color="red" radius="md" title="Unable to load lesson">
           {lessonError instanceof Error
             ? lessonError.message
             : "The lesson could not be loaded. Please try again."}
@@ -183,15 +219,15 @@ export default function LessonPage({ params }: LessonPageProps) {
             content={lesson.content ?? ""}
           />
 
+          {quizError && (
+            <Alert color="red" radius="md" title="Unable to start quiz">
+              {quizError}
+            </Alert>
+          )}
+
           <LessonQuizCard
             onStart={handleStartQuiz}
             loading={completeLesson.isPending}
-          />
-
-          <AskAnything
-            key={`${courseID}:${lessonID}`}
-            courseId={courseID}
-            lessonId={lessonID}
           />
         </div>
 
@@ -208,6 +244,14 @@ export default function LessonPage({ params }: LessonPageProps) {
             />
           )}
         </div>
+      </div>
+
+      <div className="mt-6 w-full max-w-[810px]">
+        <AskAnything
+          key={`${courseID}:${lessonID}`}
+          courseId={courseID}
+          lessonId={lessonID}
+        />
       </div>
     </div>
   );

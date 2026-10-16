@@ -60,13 +60,13 @@ function Page({ params }: PageProps) {
     );
   }
 
-  if (isError || !data?.data) {
+  if (isError || !data?.data || data.data.length === 0) {
     return (
       <Center h="100vh">
         <div>
           {error instanceof Error
             ? error.message
-            : "Error loading quiz. Please try again."}
+            : "No quiz is available for this lesson yet."}
         </div>
       </Center>
     );

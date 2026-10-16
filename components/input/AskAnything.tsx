@@ -199,7 +199,7 @@ export default function AskAnything({
           event.preventDefault();
           handleSend();
         }}
-        className="mt-5 flex w-full items-center gap-3"
+        className="mt-5 flex w-full max-w-[810px] items-center gap-3"
       >
         <div className="flex min-h-[64px] min-w-0 flex-1 items-center gap-4 rounded-[24px] bg-[#0C404E] px-5">
           <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-[#43AC47]">

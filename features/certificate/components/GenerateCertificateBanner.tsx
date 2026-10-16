@@ -1,36 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { Award, Loader2, UserPen } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { Award, Loader2 } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/navigation";
 import {
   generateCertificate,
   getMyCertificate,
 } from "@/features/certificate/services/certificate.service";
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-
-function hasName(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const user = JSON.parse(localStorage.getItem("user") ?? "{}");
-    return !!(user.firstName?.trim() && user.lastName?.trim());
-  } catch {
-    return false;
-  }
-}
+import { getMe } from "@/features/auth/services/auth.service";
 
 export default function GenerateCertificateBanner() {
   const router = useRouter();
-  const nameReady = hasName();
 
-  // Check if certificate already exists
   const { data: existing, isLoading: checking } = useQuery({
     queryKey: ["certificate-me"],
     queryFn: getMyCertificate,
     retry: false,
+  });
+
+  const { data: profile, isLoading: loadingProfile } = useQuery({
+    queryKey: ["me"],
+    queryFn: getMe,
   });
 
   const { mutate: generate, isPending } = useMutation({
@@ -54,7 +45,9 @@ export default function GenerateCertificateBanner() {
     },
   });
 
-  if (checking) return null;
+  if (checking || loadingProfile) return null;
+
+  const hasName = !!(profile?.data.firstName?.trim() && profile?.data.lastName?.trim());
 
   // Already has certificate 
   if (existing?.data) {
@@ -86,31 +79,30 @@ export default function GenerateCertificateBanner() {
         </p>
       </div>
 
-      {!nameReady && (
-        <div className="flex items-start gap-2 rounded-[8px] border border-amber-200 bg-amber-50 px-3 py-2">
-          <UserPen className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          <p className="text-xs leading-5 text-amber-800">
-            Your certificate needs your full name.{" "}
-            <Link
-              href="/settings"
-              className="font-semibold underline underline-offset-2 hover:text-amber-900"
-            >
-              Update your profile
-            </Link>{" "}
-            first.
+      {!hasName ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs text-primary-700">
+            Your certificate requires your full name. Please update your profile first.
           </p>
+          <button
+            type="button"
+            onClick={() => router.push("/profile")}
+            className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-[8px] bg-primary-700 px-5 text-sm font-bold text-white transition-colors hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
+          >
+            Update Profile
+          </button>
         </div>
+      ) : (
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => generate()}
+          className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-[8px] bg-primary-700 px-5 text-sm font-bold text-white transition-colors hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 disabled:opacity-50"
+        >
+          {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isPending ? "Generating…" : "Generate Certificate"}
+        </button>
       )}
-
-      <button
-        type="button"
-        disabled={!nameReady || isPending}
-        onClick={() => generate()}
-        className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-[8px] bg-primary-700 px-5 text-sm font-bold text-white transition-colors hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 disabled:opacity-50"
-      >
-        {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-        {isPending ? "Generating…" : "Generate Certificate"}
-      </button>
     </div>
   );
 }

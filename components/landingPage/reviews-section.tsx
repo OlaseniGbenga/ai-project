@@ -1,4 +1,9 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 const avatar = "/homepage/reviews/avatar.png";
 
@@ -24,25 +29,29 @@ const reviews = [
     role: "Automotive Technician",
     placement: "lg:col-start-3 lg:row-start-1",
   },
-  {
-    quote:
-      "The course helped me see possibilities I hadn't considered before. I can now use AI to develop ideas, improve my marketing, and make better decisions.",
-    name: "Ana Costa",
-    role: "COO, GFS",
-    placement: "lg:col-start-2 lg:row-start-2",
-  },
+  // {
+  //   quote:
+  //     "The course helped me see possibilities I hadn't considered before. I can now use AI to develop ideas, improve my marketing, and make better decisions.",
+  //   name: "Ana Costa",
+  //   role: "COO, GFS",
+  //   placement: "lg:col-start-2 lg:row-start-2",
+  // },
 ];
 
 export default function ReviewsSection() {
   return (
-    <section className="bg-[#edf2f6] px-6 py-20 sm:px-10 lg:px-[8.2vw] lg:py-40">
-      <div className="mx-auto flex w-full max-w-[1000px] flex-col items-center gap-8 lg:gap-[62px]">
-        <div className="flex flex-col items-center gap-8 text-center">
+    <section className="bg-[#edf2f6] px-6 py-10 sm:px-10 sm:py-16 lg:px-[8.2vw] lg:py-40">
+      <div className="mx-auto flex w-full max-w-[1000px] flex-col items-center gap-6 lg:gap-[62px]">
+        <motion.div
+          className="flex flex-col items-center gap-8 text-center"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           <div className="flex h-[34px] w-[103px] items-center justify-center rounded-[34px] border-2 border-[#fcfcfc] bg-white p-1">
             <div className="flex h-full w-full items-center justify-center rounded-[30px] border border-[#d9e0e4]">
-              <span className="font-serif text-base text-[#52666d]">
-                Reviews
-              </span>
+              <span className="font-serif text-base text-[#52666d]">Reviews</span>
             </div>
           </div>
           <div className="flex max-w-[518px] flex-col gap-[18px]">
@@ -54,41 +63,59 @@ export default function ReviewsSection() {
               their everyday work.
             </p>
           </div>
-        </div>
+        </motion.div>
 
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[auto_auto] lg:gap-x-5 lg:gap-y-8">
-          {reviews.map((review) => (
-            <article
+          {reviews.map((review, i) => (
+            <motion.article
               key={review.name}
-              className={`relative flex min-h-[286px] flex-col overflow-hidden rounded-[14px] bg-[#f1f7fb]/40 px-8 pb-8 pt-[106px] ${review.placement} ${review.name === "Amaka E." ? "lg:min-h-[423px]" : review.name === "Emmanuel A." ? "lg:min-h-[319px]" : review.name === "Ana Costa" ? "lg:min-h-[303px]" : "lg:min-h-[285px]"}`}
+              className={`relative flex min-h-[220px] flex-col overflow-hidden rounded-[14px] bg-[#f1f7fb]/40 px-6 pb-6 pt-16 sm:px-8 sm:pb-8 sm:pt-[80px] ${review.placement} ${review.name === "Amaka E." ? "lg:min-h-[423px] lg:pt-[106px]" : review.name === "Emmanuel A." ? "lg:min-h-[319px] lg:pt-[106px]" : review.name === "Ana Costa" ? "lg:min-h-[303px] lg:pt-[106px]" : "lg:min-h-[285px] lg:pt-[106px]"}`}
+              initial={{ opacity: 0, y: 36 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.15 }}
+              transition={{ duration: 0.6, delay: i * 0.1, ease: EASE }}
+              whileHover={{ y: -4, transition: { duration: 0.22 } }}
             >
               <span
                 aria-hidden="true"
                 className="absolute left-7 top-[-18px] font-sans text-[190px] leading-none text-[#d8eaf3]/60"
               >
-                “
+
               </span>
               <p className="relative text-base leading-6 text-[#52666d]">
-                “{review.quote}”
+                {review.quote}
               </p>
               <div className="mt-auto flex items-center gap-3 pt-8">
                 <Image
                   src={avatar}
-                  alt=""
+                  alt={`${review.name} avatar`}
                   width={36}
                   height={36}
                   className="h-9 w-9 rounded-full object-cover"
                 />
                 <div>
-                  <p className="font-serif text-sm text-[#453232]">
-                    {review.name}
-                  </p>
+                  <p className="font-serif text-sm text-[#453232]">{review.name}</p>
                   <p className="text-xs text-[#797979]">{review.role}</p>
                 </div>
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
+{/* 
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <a
+            href="/login"
+            className="inline-flex items-center gap-2 text-base font-semibold text-[#43ac47] hover:underline"
+          >
+            See what others are saying
+            <span aria-hidden="true">→</span>
+          </a>
+        </motion.div> */}
       </div>
     </section>
   );

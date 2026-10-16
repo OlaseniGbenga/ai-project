@@ -15,12 +15,11 @@ export default function UpdateProfileForm() {
     queryFn: getMe,
   });
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [lastName, setLastName] = useState<string | null>(null);
 
-  // Display name logic
-  const displayFirst = firstName || data?.data.firstName || "";
-  const displayLast = lastName || data?.data.lastName || "";
+  const displayFirst = firstName ?? data?.data.firstName ?? "";
+  const displayLast = lastName ?? data?.data.lastName ?? "";
 
   const { mutate, isPending } = useUpdateProfile();
 
@@ -64,7 +63,7 @@ export default function UpdateProfileForm() {
             <p className="mt-1 text-sm text-[#909090]">Personal account</p>
           </div>
         </div>
-        <button type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} className="flex items-center gap-1.5 rounded-[8px] border border-[#e5e5e5] px-3 py-2 text-xs font-semibold text-[#52666d] transition-colors hover:border-[#066f33] hover:text-[#066f33] focus:outline-none focus:ring-2 focus:ring-[#066f33] focus:ring-offset-2"><Pencil size={14} /> {open ? "Close" : "Edit"}</button>
+        <button type="button" onClick={() => { setFirstName(null); setLastName(null); setOpen((value) => !value); }} aria-expanded={open} className="flex items-center gap-1.5 rounded-[8px] border border-[#e5e5e5] px-3 py-2 text-xs font-semibold text-[#52666d] transition-colors hover:border-[#066f33] hover:text-[#066f33] focus:outline-none focus:ring-2 focus:ring-[#066f33] focus:ring-offset-2"><Pencil size={14} /> {open ? "Close" : "Edit"}</button>
       </div>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-2">
